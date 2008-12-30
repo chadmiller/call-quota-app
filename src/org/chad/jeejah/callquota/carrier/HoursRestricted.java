@@ -7,27 +7,41 @@ import java.util.TimeZone;
 import java.util.Locale;
 import java.util.GregorianCalendar;
 
+import org.punit.*;
+import org.punit.annotation.Test;
+import org.punit.convention.AnnotationConvention;
+
+import junit.framework.*;
+
 public class HoursRestricted extends AllMeteredCeil {
 
     static final String TAG = "HoursRestricted";
 
-    protected int startHour;
-    protected int endHour;
-
-    public HoursRestricted(int startHour, int endHour) {
+    public HoursRestricted() {
         super();
+    }
 
-        this.startHour = startHour;
-        this.endHour = endHour;
+    private String formatCalendar(GregorianCalendar c) {
+        return String.format("   %04d-%02d-%02d  %02d:%02d:%02d", 
+                c.get(GregorianCalendar.YEAR), 
+                c.get(GregorianCalendar.MONTH)+1, 
+                c.get(GregorianCalendar.DAY_OF_MONTH), 
+                c.get(GregorianCalendar.HOUR_OF_DAY), 
+                c.get(GregorianCalendar.MINUTE), 
+                c.get(GregorianCalendar.SECOND));
     }
 
     @Override
-    public long extractMeteredSeconds(long startTime, long durationSeconds) {
-        long ss = super.extractMeteredSeconds(startTime, durationSeconds);
+    public long extractMeteredSeconds(long startTimeInMs, long durationSeconds) {
+        //long ss = super.extractMeteredSeconds(startTimeInMs, durationSeconds);
+        long ss = durationSeconds;
         assert ss >= 0;
 
         GregorianCalendar calCallStart = new GregorianCalendar();
-        calCallStart.setTimeInMillis(startTime * 1000);  // sec to msec
+        calCallStart.setLenient(false);
+        calCallStart.setTimeInMillis(startTimeInMs);  // sec to msec
+
+        Log.d(TAG, String.format("extractMeteredSeconds(%d, %d)", startTimeInMs, durationSeconds));
 
         GregorianCalendar calCallEnd = (GregorianCalendar) calCallStart.clone();
         calCallEnd.add(GregorianCalendar.SECOND, (int) ss);
@@ -35,9 +49,9 @@ public class HoursRestricted extends AllMeteredCeil {
         GregorianCalendar calCursor = (GregorianCalendar) calCallStart.clone();
 
         long totalSeconds = 0;
-        while (calCursor.get(GregorianCalendar.DAY_OF_YEAR) < calCallEnd.get(GregorianCalendar.DAY_OF_YEAR)) {
-            Log.d(TAG, "stepping through one day.            Hours     " + Integer.toString(calCursor.get(GregorianCalendar.HOUR_OF_DAY)) + " to hour " + Integer.toString(calCallEnd.get(GregorianCalendar.HOUR_OF_DAY)));
 
+        assert calCursor.compareTo(calCallEnd) <= 0;
+        while (calCursor.get(GregorianCalendar.DAY_OF_YEAR) != calCallEnd.get(GregorianCalendar.DAY_OF_YEAR)) {
             calCursor.set(GregorianCalendar.HOUR_OF_DAY, 23);
             calCursor.set(GregorianCalendar.MINUTE, 59);
             calCursor.set(GregorianCalendar.SECOND, 59);
@@ -56,10 +70,11 @@ public class HoursRestricted extends AllMeteredCeil {
 
         totalSeconds += extractMeteredSecondsForDay(calCallStart, calCallEnd);
 
+        Log.d(TAG, "extractMeteredSeconds(...)  -> " + Long.toString(totalSeconds));
         return totalSeconds;
     }
 
-    public class MeteredPeriodForDay {
+    protected class MeteredPeriodForDay {
         public GregorianCalendar start;
         public GregorianCalendar end;
 
@@ -68,7 +83,6 @@ public class HoursRestricted extends AllMeteredCeil {
             int dow = t.get(GregorianCalendar.DAY_OF_WEEK);
 
             if ((dow < GregorianCalendar.MONDAY) || (dow > GregorianCalendar.FRIDAY)) {
-                Log.d(TAG, "Weekends are free.");
                 //  no period
             } else {
                 start = (GregorianCalendar) t.clone();
@@ -87,17 +101,21 @@ public class HoursRestricted extends AllMeteredCeil {
     protected long extractMeteredSecondsForDay(GregorianCalendar calCallStart, 
             GregorianCalendar calCallEnd) {
 
-        long inside;
-        long outside;
+        long count;
+
         MeteredPeriodForDay period = new MeteredPeriodForDay(calCallStart);
 
-        if (period.start == null)
-            return 0;
+        assert (period.start == null) == (period.end == null);
 
-        if (period.end == null)
-            return 0;
+        long ss = (calCallEnd.getTimeInMillis() / 1000) - (calCallStart.getTimeInMillis() / 1000);
+        Log.d(TAG, "  start: " + formatCalendar(calCallStart) + 
+                "   end: " + formatCalendar(calCallEnd) + 
+                "   for raw sec " + Long.toString(ss));
 
-        long ss = (calCallEnd.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000;
+        if (period.start == null) {
+            Log.d(TAG, "  There is no metering on this day.   -> 0");
+            return 0;
+        }
 
         //  Cases:
         //   [         (=====================)         ]   [DAY] (METERED)
@@ -107,47 +125,82 @@ public class HoursRestricted extends AllMeteredCeil {
         // d                            {---------}
         // e               {----------}
         // f     {---------------------------------}
-        // g  ...--}                              {--...  // same as a or b
-        // h  ...------------}                    {--...  // Ugh!
         // i  Loop.  Call is more than 24 hours.  The AT&T monthly-billing problem.
-        // foo'  extra hard:  end before start.  Keep logic but use outside value;
+        // x  Extra hard:  end before start.
 
+        /*
+        Log.d(TAG, "call start  " + calCallStart.toString());
+        Log.d(TAG, "call end  " + calCallEnd.toString());
+        Log.d(TAG, "metering start  " + period.start.toString());
+        Log.d(TAG, "metering end  " + period.end.toString());
+        */
 
-        if (calCallEnd.before(period.start)) {
-            Log.d(TAG, "a");
-            outside = ss;
-            inside = 0;
-        } else if (calCallStart.after(period.end)) {
-            Log.d(TAG, "b");
-            outside = ss;
-            inside = 0;
-        } else if (calCallStart.after(period.start) && calCallEnd.before(period.end)) {
-            Log.d(TAG, "e");
-            inside = ss;
-            outside = 0;
-        } else if (calCallStart.before(period.start) && calCallEnd.before(period.end)) {
-            Log.d(TAG, "c");
-            inside = (calCallEnd.getTimeInMillis() - period.start.getTimeInMillis()) / 1000;
-            outside = (period.start.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000;
-        } else if (calCallStart.before(period.end) && calCallEnd.after(period.end)) {
-            Log.d(TAG, "d");
-            inside = (period.end.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000;
-            outside = (calCallEnd.getTimeInMillis() - period.start.getTimeInMillis()) / 1000;
-        } else if (calCallStart.before(period.start) && calCallEnd.after(period.end)) {
-            Log.d(TAG, "f");
-            inside = (period.end.getTimeInMillis() - period.start.getTimeInMillis()) / 1000;
-            outside = 0;
-            outside += (period.start.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000;
-            outside += (calCallEnd.getTimeInMillis() - period.end.getTimeInMillis()) / 1000;
+        if (calCallStart.after(period.end)) {
+            count = 0;  // b
+            Log.d(TAG, "  Call begins after metering period ends.  ->  " + Long.toString(count));
+        } else if (calCallEnd.before(period.start)) {
+            count = 0; // a
+            Log.d(TAG, "  Call ends before metering period begins.  ->  " + Long.toString(count));
         } else {
-            Log.e(TAG, "Unhandled time period:  call range " + Integer.toString(calCallStart.get(GregorianCalendar.HOUR_OF_DAY)) + ":" +Integer.toString(calCallStart.get(GregorianCalendar.MINUTE)) + " to " + Integer.toString(calCallEnd.get(GregorianCalendar.HOUR_OF_DAY)) + ":" +Integer.toString(calCallEnd.get(GregorianCalendar.MINUTE)));
-            Log.e(TAG, "Unhandled time period: meter range " + Integer.toString(period.start.get(GregorianCalendar.HOUR_OF_DAY)) + ":" +Integer.toString(period.start.get(GregorianCalendar.MINUTE)) + " to " + Integer.toString(period.end.get(GregorianCalendar.HOUR_OF_DAY)) + ":" +Integer.toString(period.end.get(GregorianCalendar.MINUTE)));
-
-            inside = ss; // FIXME  be paranoid.  overreport.
-            outside = 0; // FIXME
+            if (calCallEnd.after(period.end)) {
+                if (calCallStart.before(period.start)) {
+                    count = (period.end.getTimeInMillis() - period.start.getTimeInMillis()) / 1000; // f
+                    Log.d(TAG, "  Call spans a metered period, so only middle section counts.  ->  " + Long.toString(count));
+                } else {
+                    count = (period.end.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000; // d
+                    Log.d(TAG, "  Call begins metered but finished after period ends.  ->  " + Long.toString(count));
+                }
+            } else {  // == ends during metering
+                if (calCallStart.before(period.start)) {
+                    count = (calCallEnd.getTimeInMillis() - period.start.getTimeInMillis()) / 1000; // c
+                    Log.d(TAG, "  Call begins outside metering, but last part is metered.  ->  " + Long.toString(count));
+                } else {
+                    count = ss; // e
+                    Log.d(TAG, "  Call is in middle of metering period.  All of call matches.  ->  " + Long.toString(count));
+                }
+            }
         }
 
-        return inside;
+        return count;
+    }
+
+
+    private final long friday_235026 = 1230353426000L;
+    private final long sunday_235026 = friday_235026 + (1000 * 24 * 60 * 60 * 2);
+    private final long monday_065026 = sunday_235026 + (1000 * 7 * 60 * 60);
+    private final long monday_075026 = monday_065026 + (1000 * 1 * 60 * 60);
+    private final long monday_205026 = monday_075026 + (1000 * 13* 60 * 60);
+    private final long tuesday_075026 = monday_075026 + (1000 * 24 * 60 * 60);
+
+    //@Test(expected = NullPointerException.class)
+    @Test
+    public void test_simple_metered() {
+        Assert.assertEquals("zero", 0L, extractMeteredSeconds(monday_075026, 0L));
+        Assert.assertEquals("one", 1L, extractMeteredSeconds(monday_075026, 1L));
+        Assert.assertEquals("two", 2L, extractMeteredSeconds(monday_075026, 2L));
+        Assert.assertEquals("lots", 300L, extractMeteredSeconds(monday_075026, 300L));
+    }
+
+    @Test
+    public void test_simple_weekend() {
+        Assert.assertEquals("weekend no charge", 0L, extractMeteredSeconds(sunday_235026, 2L));
+    }
+
+    @Test
+    public void test_single_edges() {
+        Assert.assertEquals("start during, cross out", 600L-26L, extractMeteredSeconds(monday_205026, 1500L));
+        Assert.assertEquals("start before, cross into", 1500L-(600L-26L), extractMeteredSeconds(monday_065026, 1500L));
+    }
+
+    @Test
+    public void test_complex_weekday() {
+        Assert.assertEquals("monday am to tuesday pm", 100800L, extractMeteredSeconds(monday_065026, 172800));
+        Assert.assertEquals("monday am to tuesday am", 50400, extractMeteredSeconds(monday_075026, 86400));
+    }
+
+    @Test
+    public void test_complex_weekend() {
+        Assert.assertEquals("friday pm to monday am", 0L, extractMeteredSeconds(friday_235026, 194400));
     }
 
 };

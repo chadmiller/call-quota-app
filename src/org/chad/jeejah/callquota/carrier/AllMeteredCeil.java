@@ -12,7 +12,7 @@ public class AllMeteredCeil extends AllMetered {
     public long extractMeteredSeconds(long startTime, long durationSeconds) {
         long s = super.extractMeteredSeconds(startTime, durationSeconds);
 
-        return s + (s % 60);
+        return (((long) Math.ceil(s/60.0)) * 60L);
     }
 
 };

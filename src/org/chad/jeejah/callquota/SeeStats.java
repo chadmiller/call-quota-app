@@ -9,6 +9,9 @@ import android.widget.TextView;
 import android.database.Cursor;
 import android.provider.CallLog.Calls;
 
+import org.punit.runner.SoloRunner;
+import org.punit.runner.AndroidRunner;
+
 import org.chad.jeejah.callquota.carrier.*;
 
 public class SeeStats extends Activity
@@ -17,8 +20,7 @@ public class SeeStats extends Activity
 
     String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE };
     Cursor managedCursor;
-	//HoursRestricted counter = new HoursRestricted(7, 21);
-	HoursRestricted counter = new HoursRestricted(12, 21);
+	HoursRestricted counter = new HoursRestricted();
 
     private long getMeteredMinuteCount(Cursor cur) { 
 
@@ -59,6 +61,9 @@ public class SeeStats extends Activity
 
 		setContentView(R.layout.main);
 
+        AndroidRunner runner = new AndroidRunner(new SoloRunner());
+        //runner.setConvention(new JUnitAnnotationConvention());
+        runner.run(HoursRestricted.class);
     }
 
 
@@ -68,6 +73,7 @@ public class SeeStats extends Activity
     {
 		super.onResume();
 
+/*
         TextView v = (TextView) findViewById(R.id.countresult);
 		if (v != null) {
 			managedCursor = managedQuery(Calls.CONTENT_URI, projection, 
@@ -79,6 +85,7 @@ public class SeeStats extends Activity
 			Log.e(TAG, "view not found!");
 			
 		}
+*/
 	}
 
 }
