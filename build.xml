@@ -41,6 +41,19 @@
         <os family="windows"/>
     </condition>
 
+ 
+    <property name="cljsrc" location="${srcdir}"/>
+    <property name="precompile" location="${cljsrc}/precompile.clj"/>
+ 
+    <target name="clojure-compile" depends="compile"
+            description="Precompile Clojure core sources.">
+        <java classname="clojure.lang.Script"
+                classpath="${outdir-classes-ospath}:${cljsrc}:${external-libs-ospath}/clojure.jar:${android-jar}">
+            <sysproperty key="clojure.compile.path" value="${outdir-classes-ospath}"/>
+            <arg value="${precompile}"/>
+        </java>
+    </target>
+ 
     <!-- Create R.java in the source directory -->
     <property name="outdir-r" value="src" />
 
@@ -148,6 +161,7 @@
     <target name="dex" depends="compile">
         <echo>Converting compiled files and external libraries into ${outdir}/${dex-file}...</echo>
         <apply executable="${dx}" failonerror="true" parallel="true">
+            <arg value="-JXmx1024M" />
             <arg value="--dex" />
             <arg value="--output=${intermediate-dex-ospath}" />
             <arg path="${outdir-classes-ospath}" />

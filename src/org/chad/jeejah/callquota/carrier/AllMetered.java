@@ -7,7 +7,7 @@ public class AllMetered {
     public AllMetered() {
 	}
 
-	public long extractMeteredSeconds(long startTime, long durationSeconds) {
+	public long extractMeteredSeconds(long startTimeInMs, long durationSeconds, String number, int type) {
 		return durationSeconds;
 	}
 
