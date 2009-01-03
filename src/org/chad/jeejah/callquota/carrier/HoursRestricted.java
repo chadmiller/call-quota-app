@@ -18,7 +18,6 @@ public class HoursRestricted extends AllMeteredCeil {
     public static final String TAG = "HoursRestricted";
 
     public HoursRestricted() {
-        super();
     }
 
     private String formatCalendar(GregorianCalendar c) {

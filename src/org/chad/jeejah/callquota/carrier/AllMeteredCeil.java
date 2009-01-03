@@ -1,7 +1,8 @@
 package org.chad.jeejah.callquota.carrier;
 
-public class AllMeteredCeil extends AllMetered {
+import org.chad.jeejah.callquota.Configuration;
 
+public class AllMeteredCeil extends AllMetered {
     static final String TAG = "AllMeteredCeil";
 
     public AllMeteredCeil() {
