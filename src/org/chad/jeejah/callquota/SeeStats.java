@@ -31,13 +31,19 @@ public class SeeStats extends Activity
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
 
-        //Configuration configuration = ((CallQuotaApplication) getApplication()).configuration;
+        Intent i = new Intent();
+        i.setClassName( "org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService" );
+        startService( i );
+
+
+        Configuration configuration = new Configuration();
+        configuration.load(this);
 
         setContentView(R.layout.main);
 
-//        viz = new Visualization(this, configuration);
+        viz = new Visualization(this, configuration);
 
-//        ViewGroup root = (ViewGroup) findViewById(R.id.root);
+        ViewGroup root = (ViewGroup) findViewById(R.id.root);
 
         /*
         ScrollView sv = new ScrollView(this);
@@ -45,16 +51,7 @@ public class SeeStats extends Activity
 
         root.addView(sv, 1);
         */
-//        root.addView(viz, 1);
-
-
-
-        Intent i = new Intent();
-        i.setClassName( "org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService" );
-        startService( i );
-
-
-
+        root.addView(viz, 1);
     }
 
 

@@ -37,8 +37,10 @@ public class Visualization extends View {
         canvas.translate(10, 10);
 
         paint.setStrokeWidth(0);
+        UsageData usageData = new UsageData(context, configuration);
+        usageData.scanLog(true);
 
-        Call[] snapshotCallData = null; // UsageData.getCalls(configuration, context);    FIXME NOW CHAD
+        Call[] snapshotCallData = usageData.callList;
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
         if (snapshotCallData.length > 0) {

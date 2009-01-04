@@ -32,9 +32,12 @@ public class LogMonitorService extends Service {
         super.onCreate();
         Log.d(LOG_TAG,"onCreate");
 
+        Configuration configuration = new Configuration();
+        configuration.load(this);
+
         serviceHandler = new Handler();
         ContentResolver contentResolver = getContentResolver();
-        ContentObserver observer = new InterpretLogChanges(serviceHandler, this);
+        ContentObserver observer = new InterpretLogChanges(serviceHandler, this, configuration);
         contentResolver.registerContentObserver(Calls.CONTENT_URI, true, observer);
     }
 
@@ -56,31 +59,33 @@ public class LogMonitorService extends Service {
     class InterpretLogChanges extends ContentObserver {
         private final String TAG = "InterpretLogChanges";
         Context context;
+        Configuration configuration;
 
-        InterpretLogChanges(Handler handler, Context context) {
+        InterpretLogChanges(Handler handler, Context context, Configuration configuration) {
             super(handler);
             this.context = context;
+            this.configuration = configuration;
         }
 
         public void onChange(boolean thisChanged) {
             Log.d(TAG, "onChange!  Money!");
 
+            UsageData usageData = new UsageData(context, configuration);
+            usageData.scanLog(false);
 
             Intent seeStats = new Intent();
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
 
-            note = new Notification(R.drawable.cost_notification, "Call time may exceed allotment.", java.lang.System.currentTimeMillis() + 20000);
-            note.setLatestEventInfo(context, "Too many prime-time calls", "42m for 19d remain. (+97min?)", pendingSeeStats);
+            if (usageData.usedTotalMeteredMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
+                note = new Notification(R.drawable.cost_notification, "Call time exceeds allotment.", java.lang.System.currentTimeMillis() + 20000);
+                note.setLatestEventInfo(context, "Too many prime-time calls", Long.toString(usageData.usedTotalMeteredMinutes) + "min used this bill.", pendingSeeStats);
+            } // ELSE IF prediction:  will be ofer by N
 
-
-            notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notMan.notify(13, note);
-
-
-
-
-
+            if (note != null) {
+                notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notMan.notify(13, note);
+            }
 
         }
     };
