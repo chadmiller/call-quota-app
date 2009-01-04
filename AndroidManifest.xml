@@ -3,7 +3,9 @@
       package="org.chad.jeejah.callquota"
       android:versionCode="1"
       android:versionName="1.0.0">
-    <application android:label="@string/app_name">
+    <application 
+			android:label="@string/app_name"
+			android:persistent="true">
         <activity android:name=".SeeStats"
                   android:label="@string/app_name">
             <intent-filter>
