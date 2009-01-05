@@ -20,16 +20,6 @@ public class HoursRestricted extends AllMeteredCeil {
     public HoursRestricted() {
     }
 
-    private String formatCalendar(GregorianCalendar c) {
-        return String.format("   %04d-%02d-%02d  %02d:%02d:%02d", 
-                c.get(GregorianCalendar.YEAR), 
-                c.get(GregorianCalendar.MONTH)+1, 
-                c.get(GregorianCalendar.DAY_OF_MONTH), 
-                c.get(GregorianCalendar.HOUR_OF_DAY), 
-                c.get(GregorianCalendar.MINUTE), 
-                c.get(GregorianCalendar.SECOND));
-    }
-
     @Override
 	public long extractMeteredSeconds(long startTimeInMs, long durationSeconds, String number, int type) {
         long ss = durationSeconds;
@@ -77,6 +67,8 @@ public class HoursRestricted extends AllMeteredCeil {
         public GregorianCalendar end;
 
         public MeteredPeriodForDay(GregorianCalendar t) {
+
+            Log.d("MeteredPeriodForDay", t.toString());
 
             int dow = t.get(GregorianCalendar.DAY_OF_WEEK);
 
@@ -154,12 +146,12 @@ public class HoursRestricted extends AllMeteredCeil {
     }
 
 
-    private final long  friday_235026 = 1230353426000L;
-    private final long  sunday_235026 = friday_235026 + (1000 * 24 * 60 * 60 * 2);
-    private final long  monday_065026 = sunday_235026 + (1000 *  7 * 60 * 60);
-    private final long  monday_075026 = monday_065026 + (1000 *  1 * 60 * 60);
-    private final long  monday_205026 = monday_075026 + (1000 * 13 * 60 * 60);
-    private final long tuesday_075026 = monday_075026 + (1000 * 24 * 60 * 60);
+    protected final long  friday_235026 = 1230353426000L;
+    protected final long  sunday_235026 = friday_235026 + (1000 * 24 * 60 * 60 * 2);
+    protected final long  monday_065026 = sunday_235026 + (1000 *  7 * 60 * 60);
+    protected final long  monday_075026 = monday_065026 + (1000 *  1 * 60 * 60);
+    protected final long  monday_205026 = monday_075026 + (1000 * 13 * 60 * 60);
+    protected final long tuesday_075026 = monday_075026 + (1000 * 24 * 60 * 60);
 
     //@Test(expected = NullPointerException.class)
     @Test

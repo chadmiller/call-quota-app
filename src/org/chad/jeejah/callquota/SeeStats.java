@@ -12,6 +12,7 @@ import android.widget.ScrollView;
 import android.content.Intent;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.punit.runner.SoloRunner;
 import org.punit.runner.AndroidRunner;
@@ -39,19 +40,26 @@ public class SeeStats extends Activity
         Configuration configuration = new Configuration();
         configuration.load(this);
 
+        if (configuration.runUnitTestsP) {
+            AndroidRunner runner = new AndroidRunner(new SoloRunner());
+            runner.run(configuration.meteringRulesClass);
+        }
+
         setContentView(R.layout.main);
 
-        viz = new Visualization(this, configuration);
+        UsageData usageData = new UsageData(this, configuration);
+        usageData.scanLog(true);
+
+        viz = new Visualization(this, configuration, usageData);
 
         ViewGroup root = (ViewGroup) findViewById(R.id.root);
-
-        /*
-        ScrollView sv = new ScrollView(this);
-        sv.addView(viz);
-
-        root.addView(sv, 1);
-        */
         root.addView(viz, 1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat(configuration.dateFormatString);
+        TextView description = (TextView) findViewById(R.id.description);
+        description.setText(
+            String.format("In %5$d calls for bill %3$s to %4$s, %1$d of %2$d minutes are metered.", 
+            usageData.usedTotalMeteredMinutes, usageData.usedTotalMinutes, sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1))), sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0))), usageData.callList.length));
     }
 
 

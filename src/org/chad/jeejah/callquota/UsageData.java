@@ -15,6 +15,7 @@ public class UsageData {
     public long beginningOfPeriodAsMs;
     public long endOfPeriodAsMs;
     public long timestamp;
+    public long predictionAtBillMinutes;
     public Call[] callList;
 
     private Configuration configuration;
@@ -34,11 +35,11 @@ public class UsageData {
         Cursor cursor;
 
 		ContentResolver cr = context.getContentResolver();
-        cursor = cr.query(Calls.CONTENT_URI, projection, null, null, null);
+        cursor = cr.query(Calls.CONTENT_URI, projection, String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, configuration.meteringRules.getEndOfNthBillBackAsMs(1), configuration.meteringRules.getEndOfNthBillBackAsMs(0), Calls.DURATION), null, null);
+        // Find where end of call is in billing period.
 
         long usedTotalMeteredMinutes = 0;
         long usedTotalMinutes = 0;
-
 
         if (storeIndividualCalls) {
             newCallList = new Call[cursor.getCount()];
@@ -84,14 +85,37 @@ public class UsageData {
             Log.d(TAG, "The provider is empty.  That's okay.");
         }
 
+
+        if (storeIndividualCalls)
+            this.callList = newCallList;
+
+        double prediction = 0.0;
+
+        if ((newCallList != null) && (newCallList.length > 1)) {
+            long nowSec = java.lang.System.currentTimeMillis() / 1000;
+            long graphBeginningOfTimeSec = newCallList[0].beginningFromEpochSec;
+            long graphEndOfTimeSec = nowSec + 386000;  // FIXME When is end?
+            long finalPointSec = newCallList[newCallList.length-1].endFromEpochSec;
+            
+            long periodLength = finalPointSec - graphBeginningOfTimeSec;
+            long growthInPeriod = usedTotalMeteredMinutes;
+
+            double growthRate = (double) growthInPeriod / periodLength;
+
+            long predictionPoint = graphEndOfTimeSec;
+
+            long predictionPeriod = graphEndOfTimeSec - graphBeginningOfTimeSec;
+
+            prediction = growthRate * predictionPeriod;
+        }
+
         this.usedTotalMinutes = usedTotalMinutes;
         this.usedTotalMeteredMinutes = usedTotalMeteredMinutes;
         this.beginningOfPeriodAsMs = beginningOfPeriodAsMs;
         this.endOfPeriodAsMs = endOfPeriodAsMs;
         this.timestamp = java.lang.System.currentTimeMillis();
+        this.predictionAtBillMinutes = (long) prediction;
 
-        if (storeIndividualCalls)
-            this.callList = newCallList;
     }
 
 

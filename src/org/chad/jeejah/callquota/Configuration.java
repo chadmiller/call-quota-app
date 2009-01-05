@@ -4,6 +4,7 @@ import android.util.Log;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import android.provider.Settings.System;
 import org.chad.jeejah.callquota.carrier.*;
 
 public class Configuration {
@@ -13,17 +14,18 @@ public class Configuration {
     public int warningPercentage;
     public long billAllowedMeteredMinutes;
     public boolean runUnitTestsP;
+    public Class meteringRulesClass;
     public static AllMetered meteringRules;
+    public String dateFormatString;
 
     public void load(Context context) {
         SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
 
         // create meter
-        String confMeterName = settings.getString("meteringRules", "HoursRestricted");
-        Class meterClass = null;
+        String confMeterName = settings.getString("meteringRules", "Tmobile");
         try {
-            meterClass = Class.forName("org.chad.jeejah.callquota.carrier." + confMeterName);
-            this.meteringRules = (AllMetered) meterClass.newInstance();
+            this.meteringRulesClass = Class.forName("org.chad.jeejah.callquota.carrier." + confMeterName);
+            this.meteringRules = (AllMetered) this.meteringRulesClass.newInstance();
         } catch (ClassNotFoundException e) {
             Log.e(TAG, "ClassNotFoundException");
         } catch (IllegalAccessException e) {
@@ -35,12 +37,8 @@ public class Configuration {
         this.runUnitTestsP = settings.getBoolean("runUnitTests", false);
         this.billAllowedMeteredMinutes = settings.getLong("billAllowedMeteredMinutes", 400);
 
-        /*
-        if (runUnitTestsP) {
-            AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            runner.run(meterClass);
-        }
-        */
+        //this.dateFormatString = context.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
+        this.dateFormatString = "yyyy-MM-dd";
 
     }
 }
