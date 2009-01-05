@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Call Quota</string>
+    <string name="activity_name">Bill Stats</string>
+	<string name="app_description">Show warnings when calls are likely to incur extra charges on one's phone bill.</string>
 </resources>
