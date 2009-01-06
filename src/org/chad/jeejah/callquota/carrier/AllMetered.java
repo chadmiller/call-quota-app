@@ -7,7 +7,7 @@ public class AllMetered {
 
 	static final String TAG = "AllMetered";
 
-	private int billEndDayOfMonth = 6;
+	private int billEndDayOfMonth = 14;
 
     public AllMetered() {
 	}

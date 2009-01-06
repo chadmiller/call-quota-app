@@ -48,6 +48,15 @@ public class Visualization extends View {
         double pixelsPerMinuteV = (double) SIZE / (configuration.billAllowedMeteredMinutes * 1.2);
 
         {
+            paint.setARGB(0x66, 0x99, 0x99, 0x99);
+            Path p = new Path();
+            p.moveTo(0,    SIZE);
+            p.lineTo(SIZE, SIZE);
+            paint.setStyle(Paint.Style.STROKE);
+            canvas.drawPath(p, paint);
+        }
+
+        {
             paint.setARGB(0x66, 0xCC, 0xCC, 0x00);
             Path p = new Path();
             p.moveTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), SIZE);
@@ -85,17 +94,19 @@ public class Visualization extends View {
 
 
         long meteredMinutesCount = 0;
+        y = (float)SIZE;
         for (Call cd: snapshotCallData) {
             Path path = new Path();
 
             x = (float)((cd.beginningFromEpochSec-graphBeginningOfTimeSec) * pixelsPerSecondH);
-            y = (float)(SIZE-(meteredMinutesCount*pixelsPerMinuteV));
             path.moveTo(x, y);
 
             meteredMinutesCount += cd.meteredMinutes;
+            double screenDistanceBilledTime = pixelsPerMinuteV * cd.meteredMinutes;
 
             x = (float)((cd.endFromEpochSec      -graphBeginningOfTimeSec) * pixelsPerSecondH) + 1;
-            y = (float)(SIZE-(meteredMinutesCount*pixelsPerMinuteV));
+
+            y -= screenDistanceBilledTime;
             path.lineTo(x, y);
 
             if (meteredMinutesCount > configuration.billAllowedMeteredMinutes)
@@ -107,7 +118,8 @@ public class Visualization extends View {
 
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(path, paint);
-            if (cd.meteredMinutes > (configuration.billAllowedMeteredMinutes / 20)) {
+            Log.d(TAG, "screen distance of " + Long.toString(cd.meteredMinutes) + " is " + Float.toString(paint.measureText(Long.toString(cd.meteredMinutes))));
+            if (paint.measureText(Long.toString(cd.meteredMinutes)) >= screenDistanceBilledTime) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setTextAlign(Paint.Align.RIGHT);
                 canvas.drawTextOnPath(Long.toString(cd.meteredMinutes), path, 0, -3, paint);
@@ -137,7 +149,7 @@ public class Visualization extends View {
             paint.setTextAlign(Paint.Align.RIGHT);
 
 
-            canvas.drawText("predicted used: " + Long.toString((long) usageData.predictionAtBillMinutes), x, y-3, paint);
+            canvas.drawText("predicted used: " + Long.toString((long) usageData.predictionAtBillMinutes), x, Math.max(10, (int)y-3), paint);
 
             /*
 
