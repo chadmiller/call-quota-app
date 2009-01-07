@@ -10,7 +10,7 @@
 
 	<string name="notification_overage_occurred_slug">Calls exceeded allotment.</string>
 	<string name="notification_overage_occurred_title">Too many prime-time calls.</string>
-	<string name="notification_overage_occurred_description">Allowed %2$d, used %3$d so far.</string>
+	<string name="notification_overage_occurred_description">Allowed %3$d, used %1$d so far.</string>
 
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>

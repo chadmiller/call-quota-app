@@ -80,7 +80,16 @@ public class LogMonitorService extends Service {
             if (usageData.usedTotalMeteredMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
 
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
-                note.setLatestEventInfo(context, context.getResources().getString(R.string.notification_overage_occurred_title), String.format(context.getResources().getString(R.string.notification_overage_occurred_description), usageData.usedTotalMeteredMinutes), pendingSeeStats);
+                note.setLatestEventInfo(
+                        context, 
+                        context.getResources().getString(R.string.notification_overage_occurred_title), 
+                        String.format(
+                            context.getResources().getString(R.string.notification_overage_occurred_description), 
+                            usageData.usedTotalMeteredMinutes,
+                            usageData.usedTotalMinutes,
+                            configuration.billAllowedMeteredMinutes
+                        ), 
+                        pendingSeeStats);
             } // ELSE IF prediction:  will be over by N   FIXME
 
             if (note != null) {
