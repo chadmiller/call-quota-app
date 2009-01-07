@@ -93,8 +93,9 @@ public class UsageData {
 
         if ((newCallList != null) && (newCallList.length > 1)) {
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            long graphBeginningOfTimeSec = newCallList[0].beginningFromEpochSec;
-            long graphEndOfTimeSec = nowSec + 386000;  // FIXME When is end?
+            long graphBeginningOfTimeSec = this.configuration.meteringRules.getEndOfNthBillBackAsMs(1) / 1000;
+            long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0) / 1000;
+
             long finalPointSec = newCallList[newCallList.length-1].endFromEpochSec;
             
             long periodLength = finalPointSec - graphBeginningOfTimeSec;
