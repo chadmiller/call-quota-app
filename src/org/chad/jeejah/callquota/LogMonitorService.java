@@ -78,9 +78,10 @@ public class LogMonitorService extends Service {
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
 
             if (usageData.usedTotalMeteredMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
-                note = new Notification(R.drawable.cost_notification, "Call time exceeds allotment.", java.lang.System.currentTimeMillis() + 20000);
-                note.setLatestEventInfo(context, "Too many prime-time calls", Long.toString(usageData.usedTotalMeteredMinutes) + "min used this bill.", pendingSeeStats);
-            } // ELSE IF prediction:  will be ofer by N
+
+                note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
+                note.setLatestEventInfo(context, context.getResources().getString(R.string.notification_overage_occurred_title), String.format(context.getResources().getString(R.string.notification_overage_occurred_description), usageData.usedTotalMeteredMinutes), pendingSeeStats);
+            } // ELSE IF prediction:  will be over by N   FIXME
 
             if (note != null) {
                 notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

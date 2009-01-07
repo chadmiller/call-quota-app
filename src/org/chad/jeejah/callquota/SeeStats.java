@@ -58,8 +58,15 @@ public class SeeStats extends Activity
         SimpleDateFormat sdf = new SimpleDateFormat(configuration.dateFormatString);
         TextView description = (TextView) findViewById(R.id.description);
         description.setText(
-            String.format("In %5$d calls for bill %3$s to %4$s, %1$d of %2$d minutes are metered.", 
-            usageData.usedTotalMeteredMinutes, usageData.usedTotalMinutes, sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1))), sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0))), usageData.callList.length));
+                String.format(
+                    getResources().getString(R.string.vis_summary), 
+                    usageData.usedTotalMeteredMinutes, // 1
+                    usageData.usedTotalMinutes, // 2
+                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1))), // 3
+                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0))), // 4
+                    usageData.callList.length // 5
+                )
+            );
     }
 
 
