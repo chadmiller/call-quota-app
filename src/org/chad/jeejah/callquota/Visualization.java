@@ -122,8 +122,8 @@ public class Visualization extends View {
 
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(path, paint);
-            Log.d(TAG, "screen distance of " + Long.toString(cd.meteredMinutes) + " is " + Float.toString(paint.measureText(Long.toString(cd.meteredMinutes))));
-            if (paint.measureText(Long.toString(cd.meteredMinutes)) >= screenDistanceBilledTime) {
+
+            if (screenDistanceBilledTime >= paint.measureText(Long.toString(cd.meteredMinutes))) {
                 paint.setStyle(Paint.Style.FILL);
                 paint.setTextAlign(Paint.Align.RIGHT);
                 canvas.drawTextOnPath(Long.toString(cd.meteredMinutes), path, 0, -3, paint);
