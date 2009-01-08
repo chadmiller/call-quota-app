@@ -49,7 +49,10 @@ public class Visualization extends View {
 
         float x = 0, y = 0;
         double pixelsPerSecondH = (double) SIZE / (graphEndOfTimeSec - graphBeginningOfTimeSec);
-        double pixelsPerMinuteV = (double) SIZE / (configuration.billAllowedMeteredMinutes * 1.2);
+        double pixelsPerMinuteV = (double) SIZE / (Math.max(
+                configuration.billAllowedMeteredMinutes,
+                usageData.predictionAtBillMinutes
+                ) * 1.1);
 
         {
             paint.setColor(res.getColor(R.drawable.vis_bill_graph_baseline));
