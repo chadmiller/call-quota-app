@@ -8,6 +8,8 @@ import android.content.Context;
 import android.widget.TextView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.content.Intent;
 
@@ -96,8 +98,27 @@ public class SeeStats extends Activity
     }
     */
 
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+		menu.add(0, 0, 0, "Configure");
 
+		return true;
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId()) {
+		case 0:
+			Log.d(TAG, "want to configure");
+            //Intent intent = new Intent(this, UpdateConfiguration.class);
+            //startActivity(intent);
+			return true;
+		}
+		return true;
+	}
 }
 
 /* vim: set et ai sta : */
