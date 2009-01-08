@@ -36,6 +36,7 @@ public class Configuration {
 
         this.runUnitTestsP = settings.getBoolean("runUnitTests", false);
         this.billAllowedMeteredMinutes = settings.getLong("billAllowedMeteredMinutes", 400);
+        this.warningPercentage = settings.getInt("billAllowedMeteredMinutes", 90);
 
         //this.dateFormatString = context.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
         this.dateFormatString = "yyyy-MM-dd";

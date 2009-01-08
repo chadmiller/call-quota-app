@@ -24,7 +24,8 @@ public class LogMonitorService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        Log.d(LOG_TAG,"onBind()   UNIMPLEMENTED!");
+        return null;
     }
 
     @Override
@@ -40,21 +41,6 @@ public class LogMonitorService extends Service {
         ContentObserver observer = new InterpretLogChanges(serviceHandler, this, configuration);
         contentResolver.registerContentObserver(Calls.CONTENT_URI, true, observer);
     }
-
-    /*
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG,"onDestroy");
-    }
-    */
-
-    /**
-     * The IAdderService is defined through IDL
-     */
-    private final ILogInfoService.Stub binder = new ILogInfoService.Stub() {
-        public int getLogInfoCount() { return counter; }
-    };
 
     class InterpretLogChanges extends ContentObserver {
         private final String TAG = "InterpretLogChanges";
@@ -77,8 +63,7 @@ public class LogMonitorService extends Service {
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
 
-            if (usageData.usedTotalMeteredMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
-
+            if (usageData.usedTotalMeteredMinutes > configuration.billAllowedMeteredMinutes) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
                 note.setLatestEventInfo(
                         context, 
@@ -90,7 +75,21 @@ public class LogMonitorService extends Service {
                             configuration.billAllowedMeteredMinutes
                         ), 
                         pendingSeeStats);
-            } // ELSE IF prediction:  will be over by N   FIXME
+
+            } else if (usageData.predictionAtBillMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
+                note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_prediction_slug), java.lang.System.currentTimeMillis());
+                note.setLatestEventInfo(
+                        context, 
+                        context.getResources().getString(R.string.notification_overage_prediction_title), 
+                        String.format(
+                            context.getResources().getString(R.string.notification_overage_prediction_description), 
+                            usageData.usedTotalMeteredMinutes,
+                            usageData.usedTotalMinutes,
+                            configuration.billAllowedMeteredMinutes
+                        ), 
+                        pendingSeeStats);
+
+            }
 
             if (note != null) {
                 notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
