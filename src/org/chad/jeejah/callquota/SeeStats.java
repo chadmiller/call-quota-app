@@ -27,6 +27,10 @@ public class SeeStats extends Activity
 
     private Visualization viz;
 
+    private Configuration configuration = new Configuration();
+    private UsageData usageData;
+
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -34,43 +38,28 @@ public class SeeStats extends Activity
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
 
+        this.configuration = new Configuration();
+        this.configuration.load(this);
+
         Intent i = new Intent();
         i.setClassName( "org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService" );
         startService( i );
 
-
-        Configuration configuration = new Configuration();
-        configuration.load(this);
-
-        if (configuration.runUnitTestsP) {
+        if (this.configuration.runUnitTestsP) {
             AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            runner.run(configuration.meteringRulesClass);
+            runner.run(this.configuration.meteringRulesClass);
         }
 
         setContentView(R.layout.main);
 
-        UsageData usageData = new UsageData(this, configuration);
-        usageData.scanLog(true);
+        this.usageData = new UsageData(this, this.configuration);
+        this.usageData.scanLog(true);
 
-        viz = new Visualization(this, configuration, usageData);
+        viz = new Visualization(this, this.configuration, this.usageData);
 
         ViewGroup root = (ViewGroup) findViewById(R.id.root);
         root.addView(viz, 1);
 
-        int firstBillDay = configuration.firstBillDay;
-
-        SimpleDateFormat sdf = new SimpleDateFormat(configuration.dateFormatString);
-        TextView description = (TextView) findViewById(R.id.description);
-        description.setText(
-                String.format(
-                    getResources().getString(R.string.vis_summary), 
-                    usageData.usedTotalMeteredMinutes, // 1
-                    usageData.usedTotalMinutes, // 2
-                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
-                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
-                    usageData.callList.length // 5
-                )
-            );
     }
 
 
@@ -82,14 +71,22 @@ public class SeeStats extends Activity
         super.onResume();
         Log.d(TAG, "onResume()");
 
-        TextView tv = (TextView) findViewById(R.id.description);
-        if (tv != null) {
-            //getMeteredMinuteCount();
-            //tv.setText("metered minutes logged: " + Long.toString(usage.minutesUsedThisBillingPeriod));
-        } else {
-            Log.e(TAG, "view not found!");
-        }
+        this.configuration.refresh();
 
+        int firstBillDay = this.configuration.firstBillDay;
+
+        SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.dateFormatString);
+        TextView description = (TextView) findViewById(R.id.description);
+        description.setText(
+                String.format(
+                    getResources().getString(R.string.vis_summary), 
+                    this.usageData.usedTotalMeteredMinutes, // 1
+                    this.usageData.usedTotalMinutes, // 2
+                    sdf.format(new Date(this.configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
+                    sdf.format(new Date(this.configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
+                    this.usageData.callList.length // 5
+                )
+            );
 
     }
 
@@ -104,7 +101,17 @@ public class SeeStats extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		super.onPrepareOptionsMenu(menu);
-		menu.add(0, 0, 0, "Configure");
+        MenuItem mi;
+        mi = menu.add(Menu.NONE, 1, Menu.NONE, "Configure");
+        mi.setIcon(android.R.drawable.ic_menu_preferences);
+
+        /*
+        mi = menu.add(Menu.NONE, 2, Menu.NONE, "Help");
+        mi.setIcon(android.R.drawable.ic_menu_help);
+
+        mi = menu.add(Menu.NONE, 3, Menu.NONE, "About");
+        mi.setIcon(android.R.drawable.ic_menu_info_details);
+        */
 
 		return true;
 	}
@@ -113,7 +120,7 @@ public class SeeStats extends Activity
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId()) {
-		case 0:
+		case 1:
             startActivity(new Intent(this, Pref.class));
 			return true;
 		}

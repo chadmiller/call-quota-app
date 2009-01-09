@@ -54,7 +54,6 @@ public class LogMonitorService extends Service {
         }
 
         public void onChange(boolean thisChanged) {
-            Log.d(TAG, "onChange!  Money!");
 
             this.configuration.refresh();
 
@@ -64,6 +63,10 @@ public class LogMonitorService extends Service {
             Intent seeStats = new Intent();
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
+
+            this.configuration.refresh();
+            if (! this.configuration.postNotificationsP)
+                return;
 
             if (usageData.usedTotalMeteredMinutes > configuration.billAllowedMeteredMinutes) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());

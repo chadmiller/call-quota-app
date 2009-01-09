@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Call Quota</string>
     <string name="activity_name">Bill Stats</string>
-    <string name="pref_file">cqpref</string>
 	<string name="app_description">Warn when calls are likely to incur extra charges on phone bill</string>
 
 	<string name="notification_overage_prediction_slug">Call time reaching limit.</string>
@@ -17,9 +16,16 @@
 	<string name="vis_limit_description">%1$d minutes in plan</string>
 	<string name="vis_summary">In %5$d calls comprising %2$d minutes total for bill %3$s to %4$s, %1$d minutes are metered.</string>
 
-	<string name="pref_carrier_rules">pref_carrier_rules</string>
-	<string name="pref_minute_limit">pref_minute_limit</string>
+	<string name="pref_min_lim_title">Metered minutes allowed</string>
+	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill</string>
 
-	<string name="pref_show_notifications">pref_show_notifications</string>
-	<string name="pref_first_bill_day_of_month">pref_first_bill_day_of_month</string>
+	<string name="pref_first_bill_day_title">Bill day start</string>
+	<string name="pref_first_bill_day_summary">Day of month that begins a new bill.</string>
+
+	<string name="pref_carrier_rules_title">Carrier billing rules</string>
+
+	<string name="id_carrier_rules">id_carrier_rules</string>
+	<string name="id_minute_limit">id_minute_limit</string>
+	<string name="id_show_notifications">id_show_notifications</string>
+	<string name="id_first_bill_day_of_month">id_first_bill_day_of_month</string>
 </resources>

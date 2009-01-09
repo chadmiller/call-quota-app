@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+       android:key="@string/id_show_notifications"
+       android:title="Post Notifications?" 
+       android:defaultValue="true"
+	   android:persistent="true"
+       android:summaryOn="Warnings will show in notification bar." 
+       android:summaryOff="No warnings flags will be raised." 
+	/>
+    <ListPreference
+       android:key="@string/id_minute_limit"
+       android:title="@string/pref_min_lim_title" 
+       android:summary="@string/pref_min_lim_summary" 
+	   android:defaultValue="3"
+	   android:persistent="true"
+       android:entries="@array/list_minute_count"
+       android:entryValues="@array/list_minute_count"
+	/>
+    <ListPreference
+       android:key="@string/id_first_bill_day_of_month"
+       android:title="@string/pref_first_bill_day_title" 
+       android:summary="@string/pref_first_bill_day_summary" 
+	   android:defaultValue="15"
+	   android:persistent="true"
+       android:entries="@array/list_days"
+       android:entryValues="@array/list_days"
+	/>
+    <ListPreference
+       android:key="@string/id_carrier_rules"
+       android:title="@string/pref_carrier_rules_title" 
+	   android:defaultValue="0"
+	   android:persistent="true"
+       android:entries="@array/list_carrier_rules"
+       android:entryValues="@array/list_carrier_rule_classes"
+	/>
+
+</PreferenceScreen>

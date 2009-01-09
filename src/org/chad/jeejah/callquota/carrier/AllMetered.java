@@ -12,8 +12,11 @@ public class AllMetered {
 
     public long getEndOfNthBillBackAsMs(int n, int billEndDayOfMonth) {
         GregorianCalendar billEnd = new GregorianCalendar();
+		if (billEndDayOfMonth < billEnd.get(GregorianCalendar.DAY_OF_MONTH)) {
+			billEnd.add(GregorianCalendar.MONTH, 1);
+		}
         billEnd.set(GregorianCalendar.DAY_OF_MONTH, billEndDayOfMonth);
-        billEnd.add(GregorianCalendar.MONTH, (n * -1));
+		billEnd.add(GregorianCalendar.MONTH, (n * -1));
         billEnd.set(GregorianCalendar.HOUR, 0);
         billEnd.set(GregorianCalendar.MINUTE, 0);
         billEnd.set(GregorianCalendar.SECOND, 0);

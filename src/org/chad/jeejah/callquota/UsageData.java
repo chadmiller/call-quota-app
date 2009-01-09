@@ -28,7 +28,6 @@ public class UsageData {
 
     public void scanLog(boolean storeIndividualCalls) {
         Call[] newCallList = null;
-
         Log.d(TAG, "scanLog()");
 
         this.configuration.refresh();
