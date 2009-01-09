@@ -7,12 +7,10 @@ public class AllMetered {
 
 	static final String TAG = "AllMetered";
 
-	private int billEndDayOfMonth = 14;
-
     public AllMetered() {
 	}
 
-    public long getEndOfNthBillBackAsMs(int n) {
+    public long getEndOfNthBillBackAsMs(int n, int billEndDayOfMonth) {
         GregorianCalendar billEnd = new GregorianCalendar();
         billEnd.set(GregorianCalendar.DAY_OF_MONTH, billEndDayOfMonth);
         billEnd.add(GregorianCalendar.MONTH, (n * -1));

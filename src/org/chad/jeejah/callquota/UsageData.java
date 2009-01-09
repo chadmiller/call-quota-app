@@ -31,11 +31,16 @@ public class UsageData {
 
         Log.d(TAG, "scanLog()");
 
+        this.configuration.refresh();
+
         String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
         Cursor cursor;
 
+
+        int firstBillDay = configuration.firstBillDay;
+
 		ContentResolver cr = context.getContentResolver();
-        cursor = cr.query(Calls.CONTENT_URI, projection, String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, configuration.meteringRules.getEndOfNthBillBackAsMs(1), configuration.meteringRules.getEndOfNthBillBackAsMs(0), Calls.DURATION), null, null);
+        cursor = cr.query(Calls.CONTENT_URI, projection, String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay), configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay), Calls.DURATION), null, null);
         // Find where end of call is in billing period.
 
         long usedTotalMeteredMinutes = 0;
@@ -93,8 +98,8 @@ public class UsageData {
 
         if ((newCallList != null) && (newCallList.length > 1)) {
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            long graphBeginningOfTimeSec = this.configuration.meteringRules.getEndOfNthBillBackAsMs(1) / 1000;
-            long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0) / 1000;
+            long graphBeginningOfTimeSec = this.configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
+            long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
 
             long finalPointSec = newCallList[newCallList.length-1].endFromEpochSec;
             

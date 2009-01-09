@@ -32,8 +32,11 @@ public class Visualization extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         Log.d(TAG, "onDraw()");
-        long graphBeginningOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(1) / 1000;
-        long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0) / 1000;
+        this.configuration.refresh();
+        int firstBillDay = this.configuration.firstBillDay;
+
+        long graphBeginningOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
+        long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
 
         Resources res = getResources();
 

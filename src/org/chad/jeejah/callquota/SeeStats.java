@@ -57,6 +57,8 @@ public class SeeStats extends Activity
         ViewGroup root = (ViewGroup) findViewById(R.id.root);
         root.addView(viz, 1);
 
+        int firstBillDay = configuration.firstBillDay;
+
         SimpleDateFormat sdf = new SimpleDateFormat(configuration.dateFormatString);
         TextView description = (TextView) findViewById(R.id.description);
         description.setText(
@@ -64,8 +66,8 @@ public class SeeStats extends Activity
                     getResources().getString(R.string.vis_summary), 
                     usageData.usedTotalMeteredMinutes, // 1
                     usageData.usedTotalMinutes, // 2
-                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1))), // 3
-                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0))), // 4
+                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
+                    sdf.format(new Date(configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
                     usageData.callList.length // 5
                 )
             );
@@ -112,12 +114,10 @@ public class SeeStats extends Activity
 	{
 		switch (item.getItemId()) {
 		case 0:
-			Log.d(TAG, "want to configure");
-            //Intent intent = new Intent(this, UpdateConfiguration.class);
-            //startActivity(intent);
+            startActivity(new Intent(this, Pref.class));
 			return true;
 		}
-		return true;
+		return super.onOptionsItemSelected(item);
 	}
 }
 

@@ -56,6 +56,8 @@ public class LogMonitorService extends Service {
         public void onChange(boolean thisChanged) {
             Log.d(TAG, "onChange!  Money!");
 
+            this.configuration.refresh();
+
             UsageData usageData = new UsageData(context, configuration);
             usageData.scanLog(false);
 

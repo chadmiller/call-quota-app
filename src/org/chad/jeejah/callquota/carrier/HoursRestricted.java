@@ -29,8 +29,6 @@ public class HoursRestricted extends AllMeteredCeil {
         calCallStart.setLenient(false);
         calCallStart.setTimeInMillis(startTimeInMs);  // sec to msec
 
-        //Log.d(TAG, String.format("extractMeteredSeconds(%d, %d)", startTimeInMs, durationSeconds));
-
         GregorianCalendar calCallEnd = (GregorianCalendar) calCallStart.clone();
         calCallEnd.add(GregorianCalendar.SECOND, (int) ss);
 
@@ -68,8 +66,6 @@ public class HoursRestricted extends AllMeteredCeil {
 
         public MeteredPeriodForDay(GregorianCalendar t) {
 
-            Log.d("MeteredPeriodForDay", t.toString());
-
             int dow = t.get(GregorianCalendar.DAY_OF_WEEK);
 
             if ((dow < GregorianCalendar.MONDAY) || (dow > GregorianCalendar.FRIDAY)) {
@@ -98,10 +94,8 @@ public class HoursRestricted extends AllMeteredCeil {
         assert (period.start == null) == (period.end == null);
 
         long ss = (calCallEnd.getTimeInMillis() / 1000) - (calCallStart.getTimeInMillis() / 1000);
-        //Log.d(TAG, "  start: " + formatCalendar(calCallStart) + "   end: " + formatCalendar(calCallEnd) + "   for raw sec " + Long.toString(ss));
 
         if (period.start == null) {
-            //Log.d(TAG, "  There is no metering on this day.   -> 0");
             return 0;
         }
 
@@ -118,26 +112,20 @@ public class HoursRestricted extends AllMeteredCeil {
 
         if (calCallStart.after(period.end)) {
             count = 0;  // b
-            //Log.d(TAG, "  Call begins after metering period ends.  ->  " + Long.toString(count));
         } else if (calCallEnd.before(period.start)) {
             count = 0; // a
-            //Log.d(TAG, "  Call ends before metering period begins.  ->  " + Long.toString(count));
         } else {
             if (calCallEnd.after(period.end)) {
                 if (calCallStart.before(period.start)) {
                     count = (period.end.getTimeInMillis() - period.start.getTimeInMillis()) / 1000; // f
-                    //Log.d(TAG, "  Call spans a metered period, so only middle section counts.  ->  " + Long.toString(count));
                 } else {
                     count = (period.end.getTimeInMillis() - calCallStart.getTimeInMillis()) / 1000; // d
-                    //Log.d(TAG, "  Call begins metered but finished after period ends.  ->  " + Long.toString(count));
                 }
             } else {  // == ends during metering
                 if (calCallStart.before(period.start)) {
                     count = (calCallEnd.getTimeInMillis() - period.start.getTimeInMillis()) / 1000; // c
-                    //Log.d(TAG, "  Call begins outside metering, but last part is metered.  ->  " + Long.toString(count));
                 } else {
                     count = ss; // e
-                    //Log.d(TAG, "  Call is in middle of metering period.  All of call matches.  ->  " + Long.toString(count));
                 }
             }
         }
