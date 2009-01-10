@@ -4,6 +4,7 @@ import android.util.Log;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.widget.Toast;
 
 import android.graphics.*;
 
@@ -50,6 +51,11 @@ public class Visualization extends View {
         Call[] snapshotCallData = this.usageData.callList;
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
+        if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2) {
+            Toast t = Toast.makeText(this.context, R.string.data_too_short_to_trend, Toast.LENGTH_LONG);
+            t.show();
+        }
+
         float x = 0, y = 0;
         double pixelsPerSecondH = (double) SIZE / (graphEndOfTimeSec - graphBeginningOfTimeSec);
         double pixelsPerMinuteV = (double) SIZE / (Math.max(
@@ -75,7 +81,7 @@ public class Visualization extends View {
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.RIGHT);
             paint.setStyle(Paint.Style.FILL);
-            canvas.drawTextOnPath("now", p, 0, -3, paint);
+            canvas.drawTextOnPath(getResources().getString(R.string.label_now), p, 0, -3, paint);
         }
 
         {
@@ -87,7 +93,7 @@ public class Visualization extends View {
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.RIGHT);
             paint.setStyle(Paint.Style.FILL);
-            canvas.drawTextOnPath("bill", p, 0, -3, paint);
+            canvas.drawTextOnPath(getResources().getString(R.string.label_bill), p, 0, -3, paint);
         }
 
         {
