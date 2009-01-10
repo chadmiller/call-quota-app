@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Call Quota</string>
+    <string name="app_version">0.2.0</string>
+    <string name="activity_name">Bill Stats</string>
+	<string name="app_description">Warn when calls are likely to incur extra charges on phone bill</string>
+	<string name="id_carrier_rules">id_carrier_rules</string>
+	<string name="id_minute_limit">id_minute_limit</string>
+	<string name="id_show_notifications">id_show_notifications</string>
+	<string name="id_first_bill_day_of_month">id_first_bill_day_of_month</string>
+</resources>
