@@ -4,6 +4,12 @@
     <string name="activity_name">Bill Stats</string>
 	<string name="app_description">Warn when calls are likely to incur extra charges on phone bill</string>
 
+	<string name="app_get_started">This program must first be configured, if it is to yielf useful information.  If your phone billing ever changes, you should come back and update these settings.</string>
+
+	<string name="app_help_1">This program uses your phone's stored call logs to advise you in your usage for each bill.  It can raise warnings when you are over your bill limit, and it can warn you if you are likely to exhaust your allocation prematurely.</string>
+	<string name="app_help_2">Important:  Avoid clearing call history in your phone!  Without accurate call trends, predictions and warnings are impossible or incorrect.  Additionally, this program assumes all calls on your bill use this phone and are represented in the call log; if you move your SIM to other phones, then all bets are off.</string>
+	<string name="app_help_3">The accuracy of this programs depends on unreliable factors, so you should not solely rely on it to avoid costs.  The author disclaims all responsibility for its use.</string>
+
 	<string name="notification_overage_prediction_slug">Call time reaching limit.</string>
 	<string name="notification_overage_prediction_title">Too many prime-time calls.</string>
 	<string name="notification_overage_prediction_description">%1$d of %2$d min used this bill.</string>
