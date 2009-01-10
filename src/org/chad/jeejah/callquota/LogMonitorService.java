@@ -67,6 +67,18 @@ public class LogMonitorService extends Service {
             this.configuration.refresh();
             if (! this.configuration.postNotificationsP)
                 return;
+            
+
+            // FIXME refactor gBOTS gEOTS nS fBD
+            int firstBillDay = configuration.firstBillDay;
+            long nowSec = java.lang.System.currentTimeMillis() / 1000;
+
+            long graphBeginningOfTimeSec = this.configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
+            long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
+
+            // FIXME move 0.2 into config
+            if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2)
+                return;
 
             if (usageData.usedTotalMeteredMinutes > configuration.billAllowedMeteredMinutes) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
