@@ -105,10 +105,10 @@ public class SeeStats extends Activity
         mi = menu.add(Menu.NONE, 1, Menu.NONE, "Configure");
         mi.setIcon(android.R.drawable.ic_menu_preferences);
 
-        /*
         mi = menu.add(Menu.NONE, 2, Menu.NONE, "Help");
         mi.setIcon(android.R.drawable.ic_menu_help);
 
+        /*
         mi = menu.add(Menu.NONE, 3, Menu.NONE, "About");
         mi.setIcon(android.R.drawable.ic_menu_info_details);
         */
@@ -122,6 +122,9 @@ public class SeeStats extends Activity
 		switch (item.getItemId()) {
 		case 1:
             startActivity(new Intent(this, Pref.class));
+			return true;
+		case 2:
+            startActivity(new Intent(this, Help.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
