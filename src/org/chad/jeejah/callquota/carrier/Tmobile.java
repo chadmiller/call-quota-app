@@ -34,12 +34,12 @@ public class Tmobile extends HoursRestricted {
         MeteredPeriodForDay period = new MeteredPeriodForDay(calCallStart);
 
         if (period.start == null) {
-            Log.d(TAG, "meter period start is null");
+            //Log.d(TAG, "meter period start is null");
             count = 0;
         } else if (calCallStart.after(period.start) && calCallStart.before(period.end)) {
             count = ss;
         } else {
-            Log.d(TAG, "call is outside metered period");
+            //Log.d(TAG, "call is outside metered period");
             count = 0;
 		}
         return count;

@@ -47,7 +47,6 @@ public class Visualization extends View {
 
         paint.setStrokeWidth(0);
 
-        Call[] snapshotCallData = this.usageData.getCallList();
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
         if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2) {
@@ -57,9 +56,16 @@ public class Visualization extends View {
 
         float x = 0, y = 0;
         double pixelsPerSecondH = (double) SIZE / (graphEndOfTimeSec - graphBeginningOfTimeSec);
+
+        long prediction;
+        try {
+            prediction = usageData.getPredictionAtBillMinutes();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            prediction = 0;
+        }
         double pixelsPerMinuteV = (double) SIZE / (Math.max(
                 configuration.getBillAllowedMeteredMinutes(),
-                usageData.getPredictionAtBillMinutes()
+                prediction
                 ) * 1.1);
 
         {
@@ -109,7 +115,7 @@ public class Visualization extends View {
 
         long meteredMinutesCount = 0;
         y = (float)SIZE;
-        for (Call cd: snapshotCallData) {
+        for (Call cd: this.usageData.getCallList()) {
             Path path = new Path();
 
             x = (float)((cd.beginningFromEpochSec-graphBeginningOfTimeSec) * pixelsPerSecondH);
@@ -140,16 +146,18 @@ public class Visualization extends View {
             }
         }
 
-        if (snapshotCallData.length >= 2) {
+        try {
             Path p = new Path();
 
             p.moveTo(x, y);
 
+            prediction = usageData.getPredictionAtBillMinutes();
+
             x = SIZE;
-            y = (float) (SIZE - (usageData.getPredictionAtBillMinutes() * pixelsPerMinuteV));
+            y = (float) (SIZE - (prediction * pixelsPerMinuteV));
 
             p.lineTo(x, y);
-            if (usageData.getPredictionAtBillMinutes() > configuration.getBillAllowedMeteredMinutes())
+            if (prediction > configuration.getBillAllowedMeteredMinutes())
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
             else
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
@@ -162,8 +170,10 @@ public class Visualization extends View {
             paint.setStyle(Paint.Style.FILL);
             paint.setTextAlign(Paint.Align.RIGHT);
 
-            canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), usageData.getPredictionAtBillMinutes()), x, Math.max(10, (int)y-3), paint);
+            canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-3), paint);
 
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.i(TAG, "Can't make prediction with no data available.");
         }
 
     }

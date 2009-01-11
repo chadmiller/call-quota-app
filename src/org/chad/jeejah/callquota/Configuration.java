@@ -25,22 +25,27 @@ public class Configuration {
 
 
     public void invalidate() {
-        Log.d(TAG, "invalidated");
         billAllowedMeteredMinutes_valid = false;
+        firstBillDay_valid = false;
         meteringRulesClass_valid = false;
-        meteringRules = null;
-        wantUnitTestsP_valid = false;
         wantNotificationsP_valid = false;
+        wantUnitTestsP_valid = false;
         warningPercentage_valid = false;
+
+        // :r! grep _valid\; % |awk '{ print $3 }' |sed -e 's/;/ = false;/' |sort
+
+        Log.i(TAG, "cached data invalidated");
     }
 
 
     private boolean wantNotificationsP;
     private boolean wantNotificationsP_valid;
     boolean getWantNotificationsP() {
-        if (! this.wantNotificationsP_valid)
+        if (! this.wantNotificationsP_valid) {
             this.wantNotificationsP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notifications), true);
-        this.wantNotificationsP_valid = true;
+            Log.d(TAG, "refreshed wantNotificationsP");
+            this.wantNotificationsP_valid = true;
+        }
         return this.wantNotificationsP;
     }
 
@@ -55,8 +60,9 @@ public class Configuration {
                 Log.e(TAG, "ClassNotFoundException");
                 return null;
             }
+            Log.d(TAG, "refreshed meteringRulesClass");
+            meteringRulesClass_valid = true;
         }
-        meteringRulesClass_valid = true;
         return meteringRulesClass;
     }
 
@@ -67,15 +73,18 @@ public class Configuration {
                 Class c = getMeteringRulesClass();
                 if (c != null)
                     this.meteringRules = (AllMetered) c.newInstance();
-                else
+                else {
                     this.meteringRules = (AllMetered) new Tmobile();
+                    Log.e(TAG, "None found.  Falling back to " + this.meteringRules.TAG);
+                }
             } catch (IllegalAccessException e) {
-                Log.e(TAG, "IllegalAccessException");
                 this.meteringRules = (AllMetered) new Tmobile();
+                Log.e(TAG, "IllegalAccessException.  Falling back to " + this.meteringRules.TAG);
             } catch (InstantiationException e) {
-                Log.e(TAG, "InstantiationException");
                 this.meteringRules = (AllMetered) new Tmobile();
+                Log.e(TAG, "InstantiationException.  Falling back to " + this.meteringRules.TAG);
             }
+            Log.d(TAG, "refreshed meteringRules");
         }
         return this.meteringRules;
     }
@@ -84,9 +93,11 @@ public class Configuration {
     private boolean wantUnitTestsP;
     private boolean wantUnitTestsP_valid;
     public boolean getWantUnitTestsP() {
-        if (! this.wantUnitTestsP_valid)
+        if (! this.wantUnitTestsP_valid) {
             this.wantUnitTestsP = this.sp.getBoolean("wantUnitTests", false);
-        this.wantUnitTestsP_valid = true;
+            Log.d(TAG, "refreshed wantUnitTestsP");
+            this.wantUnitTestsP_valid = true;
+        }
         return this.wantUnitTestsP;
     }
 
@@ -97,9 +108,9 @@ public class Configuration {
         if (! this.billAllowedMeteredMinutes_valid) {
             String s = this.sp.getString(this.ctx.getString(R.string.id_minute_limit), "400");
             this.billAllowedMeteredMinutes = Long.parseLong(s);
-            Log.d(TAG, String.format("getBillAllowedMeteredMinutes %d = %s", billAllowedMeteredMinutes, s));
+            Log.d(TAG, String.format("refreshed getBillAllowedMeteredMinutes %d", billAllowedMeteredMinutes));
+            this.billAllowedMeteredMinutes_valid = true;
         }
-        this.billAllowedMeteredMinutes_valid = true;
         return this.billAllowedMeteredMinutes;
     }
 
@@ -107,9 +118,11 @@ public class Configuration {
     private int warningPercentage;
     private boolean warningPercentage_valid;
     public int getWarningPercentage() {
-        if (! this.warningPercentage_valid)
+        if (! this.warningPercentage_valid) {
             this.warningPercentage = this.sp.getInt("warningPercentage", 90);
-        this.warningPercentage_valid = true;
+            Log.d(TAG, "refreshed warningPercentage");
+            this.warningPercentage_valid = true;
+        }
         return this.warningPercentage;
     }
 
@@ -117,9 +130,11 @@ public class Configuration {
     private int firstBillDay;
     private boolean firstBillDay_valid;
     public int getFirstBillDay() {
-        if (! this.firstBillDay_valid)
+        if (! this.firstBillDay_valid) {
             this.firstBillDay = Integer.parseInt(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
-        this.firstBillDay_valid = true;
+            Log.d(TAG, "refreshed firstBillDay");
+            this.firstBillDay_valid = true;
+        }
         return this.firstBillDay;
     }
 

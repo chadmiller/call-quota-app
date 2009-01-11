@@ -5,13 +5,18 @@ import java.util.GregorianCalendar;
 
 public class AllMetered {
 
-	static final String TAG = "AllMetered";
+	public static final String TAG = "AllMetered";
 
     public AllMetered() {
 	}
 
+	/** Find the instant that ends a billing period. */
     public long getEndOfNthBillBackAsMs(int n, int billEndDayOfMonth) {
+		Log.d(TAG, String.format("getEndOfNthBillBackAsMs: last day is %d", billEndDayOfMonth));
         GregorianCalendar billEnd = new GregorianCalendar();
+		
+		/* If the last day is between the start of the month and now, then the
+		 * end is next month, so go there before rounding down. */
 		if (billEndDayOfMonth < billEnd.get(GregorianCalendar.DAY_OF_MONTH)) {
 			billEnd.add(GregorianCalendar.MONTH, 1);
 		}

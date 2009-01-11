@@ -15,6 +15,9 @@ public class Pref extends PreferenceActivity {
 
     @Override
     protected void onPause() {
+        super.onPause();
+        // Assume that the preferences are already saved by this point.
+
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
 
         Configuration configuration = app.conf();
@@ -22,8 +25,6 @@ public class Pref extends PreferenceActivity {
 
         UsageData usageData = app.usage();
         usageData.invalidate();
-
-        super.onPause();
     }
 }
 /* vim: set et ai sta : */

@@ -27,24 +27,46 @@ public class UsageData {
     private boolean beginningOfPeriodAsMs_valid;
     private long beginningOfPeriodAsMs;
     public long getBeginningOfPeriodAsMs() {
-        if (! beginningOfPeriodAsMs_valid)
+        if (! beginningOfPeriodAsMs_valid) {
             this.beginningOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, this.configuration.getFirstBillDay());
+            beginningOfPeriodAsMs_valid = true;
+            Log.d(TAG, "refreshed beginningOfPeriodAsMs");
+        }
         return this.beginningOfPeriodAsMs;
     }
 
     private boolean endOfPeriodAsMs_valid;
     private long endOfPeriodAsMs;
     public long getEndOfPeriodAsMs() {
-        if (! endOfPeriodAsMs_valid)
+        if (! endOfPeriodAsMs_valid) {
             this.endOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, this.configuration.getFirstBillDay());
+            endOfPeriodAsMs_valid = true;
+            Log.d(TAG, "refreshed endOfPeriodAsMs");
+        }
         return this.endOfPeriodAsMs;
     }
 
     private long predictionAtBillMinutes;
+    /** Prediction is never cached, as it depends on the current time. */
     public long getPredictionAtBillMinutes() {
         if (! valid)
             getCallList(); // has side effects
-        return this.predictionAtBillMinutes;
+
+        try {
+            long nowSec = java.lang.System.currentTimeMillis() / 1000;
+            long finalPointSec = this.callList[this.callList.length-1].endFromEpochSec;
+            long periodLength = finalPointSec - (getBeginningOfPeriodAsMs() / 1000);
+            double growthInPeriod = (double) getUsedTotalMeteredMinutes();
+            double growthRate = growthInPeriod / periodLength;
+            long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfPeriodAsMs()) / 1000;
+            this.predictionAtBillMinutes = (long) (growthRate * predictionPeriod);
+
+            return this.predictionAtBillMinutes;
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.i(TAG, "There were no call entries to scan.");
+            throw e;
+        }
     }
 
     private Configuration configuration;
@@ -61,6 +83,7 @@ public class UsageData {
         this.valid = false;
         this.endOfPeriodAsMs_valid = false;
         this.beginningOfPeriodAsMs_valid = false;
+        Log.i(TAG, "cached data invalidated");
     }
 
     
@@ -118,19 +141,7 @@ public class UsageData {
         }
         this.callList = newCallList;
 
-        double prediction = 0.0;
-        if ((newCallList != null) && (newCallList.length > 1)) {
-            long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            long finalPointSec = newCallList[newCallList.length-1].endFromEpochSec;
-            long periodLength = finalPointSec - (this.beginningOfPeriodAsMs / 1000);
-            long growthInPeriod = usedTotalMeteredMinutes;
-            double growthRate = (double) growthInPeriod / periodLength;
-            long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfPeriodAsMs()) / 1000;
-            prediction = growthRate * predictionPeriod;
-        }
-
-        this.predictionAtBillMinutes = (long) prediction;
-
+        Log.d(TAG, "refreshed usedTotalMinutes, usedTotalMeteredMinutes, callList");
         valid = true;
         return this.callList;
     }
