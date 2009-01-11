@@ -13,5 +13,17 @@ public class Pref extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferencetree);
     }
 
+    @Override
+    protected void onPause() {
+        CallQuotaApplication app = (CallQuotaApplication) getApplication();
+
+        Configuration configuration = app.conf();
+        configuration.invalidate();
+
+        UsageData usageData = app.usage();
+        usageData.invalidate();
+
+        super.onPause();
+    }
 }
 /* vim: set et ai sta : */

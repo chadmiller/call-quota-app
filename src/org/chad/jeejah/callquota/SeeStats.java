@@ -27,7 +27,7 @@ public class SeeStats extends Activity
 
     private Visualization viz;
 
-    private Configuration configuration = new Configuration();
+    private Configuration configuration;
     private UsageData usageData;
 
 
@@ -38,22 +38,21 @@ public class SeeStats extends Activity
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
 
-        this.configuration = new Configuration();
-        this.configuration.load(this);
+        CallQuotaApplication app = (CallQuotaApplication) getApplication();
+        this.configuration = app.conf();
 
         Intent i = new Intent();
         i.setClassName( "org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService" );
         startService( i );
 
-        if (this.configuration.runUnitTestsP) {
+        if (this.configuration.getWantUnitTestsP()) {
             AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            runner.run(this.configuration.meteringRulesClass);
+            runner.run(this.configuration.getMeteringRulesClass());
         }
 
         setContentView(R.layout.main);
 
-        this.usageData = new UsageData(this, this.configuration);
-        this.usageData.scanLog(true);
+        this.usageData = app.usage();
 
         viz = new Visualization(this, this.configuration, this.usageData);
 
@@ -71,20 +70,18 @@ public class SeeStats extends Activity
         super.onResume();
         Log.d(TAG, "onResume()");
 
-        this.configuration.refresh();
+        int firstBillDay = this.configuration.getFirstBillDay();
 
-        int firstBillDay = this.configuration.firstBillDay;
-
-        SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.dateFormatString);
+        SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.getDateFormatString());
         TextView description = (TextView) findViewById(R.id.description);
         description.setText(
                 String.format(
                     getResources().getString(R.string.vis_summary), 
-                    this.usageData.usedTotalMeteredMinutes, // 1
-                    this.usageData.usedTotalMinutes, // 2
-                    sdf.format(new Date(this.configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
-                    sdf.format(new Date(this.configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
-                    this.usageData.callList.length // 5
+                    this.usageData.getUsedTotalMeteredMinutes(), // 1
+                    this.usageData.getUsedTotalMinutes(), // 2
+                    sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
+                    sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
+                    this.usageData.getCallList().length // 5
                 )
             );
 

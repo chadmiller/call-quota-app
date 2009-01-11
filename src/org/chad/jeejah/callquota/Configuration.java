@@ -11,55 +11,122 @@ import org.chad.jeejah.callquota.carrier.Tmobile;
 
 public class Configuration {
     private static final String TAG = "Configuration";
+    private SharedPreferences sp;
 
-    public int warningPercentage;
-    public long billAllowedMeteredMinutes;
-    public boolean runUnitTestsP;
-    public Class meteringRulesClass;
-    public static AllMetered meteringRules;
-    public String dateFormatString;
-    public int firstBillDay;
-    public boolean postNotificationsP;
+    private Context ctx;
+    public Configuration(Context ctx, String owner) {
+        Log.d(TAG, "Created by " + owner);
 
-    private Context storedContext;
+        this.ctx = ctx;
+        this.sp = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-    public void load(Context context) {
-        Log.d(TAG, "load()");
-        this.storedContext = context;
-        refresh();
+        invalidate();
     }
 
-    public void refresh() {
-        Log.d(TAG, "refresh()");
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.storedContext);
 
-        // create meter
-        String confMeterName = settings.getString(this.storedContext.getString(R.string.id_carrier_rules), "Tmobile");
-        try {
-            this.meteringRulesClass = Class.forName("org.chad.jeejah.callquota.carrier." + confMeterName);
-            this.meteringRules = (AllMetered) this.meteringRulesClass.newInstance();
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, "ClassNotFoundException");
-            this.meteringRules = (AllMetered) new Tmobile();
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "IllegalAccessException");
-            this.meteringRules = (AllMetered) new Tmobile();
-        } catch (InstantiationException e) {
-            Log.e(TAG, "InstantiationException");
-            this.meteringRules = (AllMetered) new Tmobile();
+    public void invalidate() {
+        Log.d(TAG, "invalidated");
+        billAllowedMeteredMinutes_valid = false;
+        meteringRulesClass_valid = false;
+        meteringRules = null;
+        wantUnitTestsP_valid = false;
+        wantNotificationsP_valid = false;
+        warningPercentage_valid = false;
+    }
+
+
+    private boolean wantNotificationsP;
+    private boolean wantNotificationsP_valid;
+    boolean getWantNotificationsP() {
+        if (! this.wantNotificationsP_valid)
+            this.wantNotificationsP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notifications), true);
+        this.wantNotificationsP_valid = true;
+        return this.wantNotificationsP;
+    }
+
+    private Class meteringRulesClass;
+    private boolean meteringRulesClass_valid;
+    public Class getMeteringRulesClass() {
+        if (! meteringRulesClass_valid) {
+            String confMeterName = this.sp.getString(this.ctx.getString(R.string.id_carrier_rules), "Tmobile");
+            try {
+                this.meteringRulesClass = Class.forName("org.chad.jeejah.callquota.carrier." + confMeterName);
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "ClassNotFoundException");
+                return null;
+            }
         }
+        meteringRulesClass_valid = true;
+        return meteringRulesClass;
+    }
 
-        this.runUnitTestsP = settings.getBoolean("runUnitTests", false);
+    private AllMetered meteringRules;
+    public AllMetered getMeteringRules() {
+        if (meteringRules == null) {
+            try {
+                Class c = getMeteringRulesClass();
+                if (c != null)
+                    this.meteringRules = (AllMetered) c.newInstance();
+                else
+                    this.meteringRules = (AllMetered) new Tmobile();
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, "IllegalAccessException");
+                this.meteringRules = (AllMetered) new Tmobile();
+            } catch (InstantiationException e) {
+                Log.e(TAG, "InstantiationException");
+                this.meteringRules = (AllMetered) new Tmobile();
+            }
+        }
+        return this.meteringRules;
+    }
 
-        this.postNotificationsP = settings.getBoolean(this.storedContext.getString(R.string.id_show_notifications), true);
-        this.billAllowedMeteredMinutes = Long.parseLong(settings.getString(this.storedContext.getString(R.string.id_minute_limit), "400"));
-        this.warningPercentage = settings.getInt("warningPercentage", 90);
-        this.firstBillDay = Integer.parseInt(settings.getString(this.storedContext.getString(R.string.id_first_bill_day_of_month), "15"));
 
-        //this.dateFormatString = this.storedContext.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
-        this.dateFormatString = "yyyy-MM-dd";  //  FIXME
+    private boolean wantUnitTestsP;
+    private boolean wantUnitTestsP_valid;
+    public boolean getWantUnitTestsP() {
+        if (! this.wantUnitTestsP_valid)
+            this.wantUnitTestsP = this.sp.getBoolean("wantUnitTests", false);
+        this.wantUnitTestsP_valid = true;
+        return this.wantUnitTestsP;
+    }
 
-        Log.d(TAG, String.format("confMeterName is %s and billAllowedMeteredMinutes is %d and firstBillDay is %d", confMeterName, this.billAllowedMeteredMinutes, this.firstBillDay));
+
+    private long billAllowedMeteredMinutes;
+    private boolean billAllowedMeteredMinutes_valid;
+    public long getBillAllowedMeteredMinutes() {
+        if (! this.billAllowedMeteredMinutes_valid) {
+            String s = this.sp.getString(this.ctx.getString(R.string.id_minute_limit), "400");
+            this.billAllowedMeteredMinutes = Long.parseLong(s);
+            Log.d(TAG, String.format("getBillAllowedMeteredMinutes %d = %s", billAllowedMeteredMinutes, s));
+        }
+        this.billAllowedMeteredMinutes_valid = true;
+        return this.billAllowedMeteredMinutes;
+    }
+
+    
+    private int warningPercentage;
+    private boolean warningPercentage_valid;
+    public int getWarningPercentage() {
+        if (! this.warningPercentage_valid)
+            this.warningPercentage = this.sp.getInt("warningPercentage", 90);
+        this.warningPercentage_valid = true;
+        return this.warningPercentage;
+    }
+
+
+    private int firstBillDay;
+    private boolean firstBillDay_valid;
+    public int getFirstBillDay() {
+        if (! this.firstBillDay_valid)
+            this.firstBillDay = Integer.parseInt(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
+        this.firstBillDay_valid = true;
+        return this.firstBillDay;
+    }
+
+
+    public String getDateFormatString() {
+        //this.dateFormatString = this.ctx.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
+        return "yyyy-MM-dd";  //  FIXME
     }
 }
 /* vim: set et ai sta : */

@@ -24,7 +24,7 @@ public class LogMonitorService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(LOG_TAG,"onBind()   UNIMPLEMENTED!");
+        Log.i(LOG_TAG,"onBind()   UNIMPLEMENTED!");
         return null;
     }
 
@@ -33,76 +33,72 @@ public class LogMonitorService extends Service {
         super.onCreate();
         Log.d(LOG_TAG,"onCreate");
 
-        Configuration configuration = new Configuration();
-        configuration.load(this);
-
         serviceHandler = new Handler();
         ContentResolver contentResolver = getContentResolver();
-        ContentObserver observer = new InterpretLogChanges(serviceHandler, this, configuration);
+        ContentObserver observer = new InterpretLogChanges(serviceHandler, this);
         contentResolver.registerContentObserver(Calls.CONTENT_URI, true, observer);
     }
 
     class InterpretLogChanges extends ContentObserver {
         private final String TAG = "InterpretLogChanges";
         Context context;
-        Configuration configuration;
 
-        InterpretLogChanges(Handler handler, Context context, Configuration configuration) {
+        InterpretLogChanges(Handler handler, Context context) {
             super(handler);
+
             this.context = context;
-            this.configuration = configuration;
         }
 
         public void onChange(boolean thisChanged) {
+            CallQuotaApplication app = (CallQuotaApplication) getApplication();
+            Configuration configuration = app.conf();
 
-            this.configuration.refresh();
-
-            UsageData usageData = new UsageData(context, configuration);
-            usageData.scanLog(false);
+            UsageData usageData = app.usage();
 
             Intent seeStats = new Intent();
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
 
-            this.configuration.refresh();
-            if (! this.configuration.postNotificationsP)
+            if (! configuration.getWantNotificationsP())
                 return;
             
 
             // FIXME refactor gBOTS gEOTS nS fBD
-            int firstBillDay = configuration.firstBillDay;
+            int firstBillDay = configuration.getFirstBillDay();
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
-            long graphBeginningOfTimeSec = this.configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
-            long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
+            long graphBeginningOfTimeSec = configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
+            long graphEndOfTimeSec = configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
 
             // FIXME move 0.2 into config
             if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2)
                 return;
 
-            if (usageData.usedTotalMeteredMinutes > configuration.billAllowedMeteredMinutes) {
+            long allowedMin = configuration.getBillAllowedMeteredMinutes();
+
+            if (usageData.getUsedTotalMeteredMinutes() > allowedMin) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
                 note.setLatestEventInfo(
                         context, 
                         context.getResources().getString(R.string.notification_overage_occurred_title), 
                         String.format(
                             context.getResources().getString(R.string.notification_overage_occurred_description), 
-                            usageData.usedTotalMeteredMinutes,
-                            usageData.usedTotalMinutes,
-                            configuration.billAllowedMeteredMinutes
+                            usageData.getUsedTotalMeteredMinutes(),
+                            usageData.getUsedTotalMinutes(),
+                            allowedMin
                         ), 
                         pendingSeeStats);
 
-            } else if (usageData.predictionAtBillMinutes > ((configuration.warningPercentage / 100.0) * configuration.billAllowedMeteredMinutes)) {
+            } else if (usageData.getPredictionAtBillMinutes() > ((configuration.getWarningPercentage() / 100.0) * allowedMin)) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_prediction_slug), java.lang.System.currentTimeMillis());
                 note.setLatestEventInfo(
                         context, 
                         context.getResources().getString(R.string.notification_overage_prediction_title), 
                         String.format(
                             context.getResources().getString(R.string.notification_overage_prediction_description), 
-                            usageData.usedTotalMeteredMinutes,
-                            usageData.usedTotalMinutes,
-                            configuration.billAllowedMeteredMinutes
+                            usageData.getUsedTotalMeteredMinutes(),
+                            usageData.getUsedTotalMinutes(),
+                            allowedMin
                         ), 
                         pendingSeeStats);
 

@@ -33,11 +33,10 @@ public class Visualization extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         Log.d(TAG, "onDraw()");
-        this.configuration.refresh();
-        int firstBillDay = this.configuration.firstBillDay;
+        int firstBillDay = this.configuration.getFirstBillDay();
 
-        long graphBeginningOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
-        long graphEndOfTimeSec = configuration.meteringRules.getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
+        long graphBeginningOfTimeSec = this.usageData.getBeginningOfPeriodAsMs() / 1000;
+        long graphEndOfTimeSec = this.usageData.getEndOfPeriodAsMs()/ 1000;
 
         Resources res = getResources();
 
@@ -48,7 +47,7 @@ public class Visualization extends View {
 
         paint.setStrokeWidth(0);
 
-        Call[] snapshotCallData = this.usageData.callList;
+        Call[] snapshotCallData = this.usageData.getCallList();
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
         if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2) {
@@ -59,8 +58,8 @@ public class Visualization extends View {
         float x = 0, y = 0;
         double pixelsPerSecondH = (double) SIZE / (graphEndOfTimeSec - graphBeginningOfTimeSec);
         double pixelsPerMinuteV = (double) SIZE / (Math.max(
-                configuration.billAllowedMeteredMinutes,
-                usageData.predictionAtBillMinutes
+                configuration.getBillAllowedMeteredMinutes(),
+                usageData.getPredictionAtBillMinutes()
                 ) * 1.1);
 
         {
@@ -99,15 +98,14 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_limit_time));
             Path p = new Path();
-            p.moveTo(0,    SIZE-(float)(configuration.billAllowedMeteredMinutes * pixelsPerMinuteV));
-            p.lineTo(SIZE, SIZE-(float)(configuration.billAllowedMeteredMinutes * pixelsPerMinuteV));
+            p.moveTo(0,    SIZE-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
+            p.lineTo(SIZE, SIZE-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.LEFT);
             paint.setStyle(Paint.Style.FILL);
-            canvas.drawTextOnPath(String.format(res.getString(R.string.vis_limit_description), configuration.billAllowedMeteredMinutes), p, 0, -3, paint);
+            canvas.drawTextOnPath(String.format(res.getString(R.string.vis_limit_description), configuration.getBillAllowedMeteredMinutes()), p, 0, -3, paint);
         }
-
 
         long meteredMinutesCount = 0;
         y = (float)SIZE;
@@ -125,7 +123,7 @@ public class Visualization extends View {
             y -= screenDistanceBilledTime;
             path.lineTo(x, y);
 
-            if (meteredMinutesCount > configuration.billAllowedMeteredMinutes)
+            if (meteredMinutesCount > configuration.getBillAllowedMeteredMinutes())
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_call_over));
             else if (cd.meteredMinutes != 0)
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_call_more));
@@ -148,10 +146,10 @@ public class Visualization extends View {
             p.moveTo(x, y);
 
             x = SIZE;
-            y = (float) (SIZE - (usageData.predictionAtBillMinutes * pixelsPerMinuteV));
+            y = (float) (SIZE - (usageData.getPredictionAtBillMinutes() * pixelsPerMinuteV));
 
             p.lineTo(x, y);
-            if (usageData.predictionAtBillMinutes > configuration.billAllowedMeteredMinutes)
+            if (usageData.getPredictionAtBillMinutes() > configuration.getBillAllowedMeteredMinutes())
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
             else
                 paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
@@ -164,21 +162,7 @@ public class Visualization extends View {
             paint.setStyle(Paint.Style.FILL);
             paint.setTextAlign(Paint.Align.RIGHT);
 
-
-            canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), usageData.predictionAtBillMinutes), x, Math.max(10, (int)y-3), paint);
-
-            /*
-
-            paint.setColor(Color.LTGRAY);
-            paint.setTextAlign(Paint.Align.CENTER);
-            if (usageData.predictionAtBillMinutes > configuration.billAllowedMeteredMinutes) {
-                canvas.drawText("Based on your usage so far, you will exceed your plan by " + Long.toString((long) usageData.predictionAtBillMinutes - configuration.billAllowedMeteredMinutes), SIZE/2, SIZE+60, paint);
-                canvas.drawText("minutes.", SIZE/2, SIZE+80, paint);
-            } else {
-                canvas.drawText("Based on your usage so far, you will have " + Long.toString(configuration.billAllowedMeteredMinutes - (long) usageData.predictionAtBillMinutes), SIZE/2, SIZE+60, paint);
-                canvas.drawText("minutes left unused.", SIZE/2, SIZE+80, paint);
-            }
-            */
+            canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), usageData.getPredictionAtBillMinutes()), x, Math.max(10, (int)y-3), paint);
 
         }
 
