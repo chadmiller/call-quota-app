@@ -1,11 +1,11 @@
 <resources>
 	<drawable name="vis_bill_graph_call_over">#ff33</drawable>
 	<drawable name="vis_bill_graph_call_more">#9ff3</drawable>
-	<drawable name="vis_bill_graph_call_nochange">#93f3</drawable>
+	<drawable name="vis_bill_graph_call_nochange">#999f</drawable>
 
-	<drawable name="vis_bill_graph_prediction_over">#ff66</drawable>
-	<drawable name="vis_bill_graph_prediction_under">#f69f</drawable>
-	<drawable name="vis_bill_graph_baseline">#3999</drawable>
+	<drawable name="vis_bill_graph_prediction_over">#ff33</drawable>
+	<drawable name="vis_bill_graph_prediction_under">#f9cf</drawable>
+	<drawable name="vis_bill_graph_baseline">#3ccc</drawable>
 
 	<drawable name="vis_limit_time">#9f33</drawable>
 	<drawable name="vis_bill_date">#9ccc</drawable>
