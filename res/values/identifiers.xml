@@ -11,4 +11,5 @@
 	<string name="id_minute_limit">id_minute_limit</string>
 	<string name="id_show_notifications">id_show_notifications</string>
 	<string name="id_first_bill_day_of_month">id_first_bill_day_of_month</string>
+	<string name="id_last_configuration_point">id_last_configuration_point</string>
 </resources>

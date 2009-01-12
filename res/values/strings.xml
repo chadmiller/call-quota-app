@@ -4,7 +4,8 @@
 	<string name="label_now">now</string>
 	<string name="label_bill">bill</string>
 
-	<string name="app_get_started">This program must first be configured, if it is to yield useful information.  If your phone billing ever changes, you should come back and update these settings.</string>
+	<string name="app_get_started">Before using this program, you need to know four things: <b>1)</b> You must tell it how you're billed (and update it if your bill changes).  <b>2)</b> You can't clear your call log, or it can't make predictions. <b>3)</b> It assumes this phone is the only device that uses your time. <b>4)</b> The author isn't responsible for your bill.</string>
+
 	<string name="data_too_short_to_trend">There isn't enough information to show an accurate trend.  Wait a while, make calls, and check back later.</string>
 
 	<string name="app_help_1">This program uses your phone\'s stored call logs to advise you how often you may safely use your phone.  It can raise warnings when you are over your time limit, and it can warn you if you are likely to exhaust your call time allocation prematurely.</string>
