@@ -3,7 +3,7 @@ package org.chad.jeejah.callquota.carrier;
 import android.util.Log;
 import java.util.GregorianCalendar;
 
-public class AllMetered {
+public class AllMetered implements Carrier {
 
 	public static final String TAG = "AllMetered";
 
