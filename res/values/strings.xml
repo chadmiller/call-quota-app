@@ -14,12 +14,12 @@
 	<string name="app_help_4">If you find bugs, please submit them at http://code.google.com/p/androidcallquota/issues/list .</string>
 
 	<string name="notification_overage_prediction_slug">Call time reaching limit.</string>
-	<string name="notification_overage_prediction_title">Too many prime-time calls.</string>
-	<string name="notification_overage_prediction_description">%1$d of %2$d min used this bill.</string>
+	<string name="notification_overage_prediction_title">Prime-time calls .</string>
+	<string name="notification_overage_prediction_description">Allowed %3$dm, used %1$d; %4$d likely.</string>
 
 	<string name="notification_overage_occurred_slug">Calls exceeded allotment.</string>
-	<string name="notification_overage_occurred_title">Too many prime-time calls.</string>
-	<string name="notification_overage_occurred_description">Allowed %3$d, used %1$d so far.</string>
+	<string name="notification_overage_occurred_title">Too many prime-time calls!</string>
+	<string name="notification_overage_occurred_description">Allowed %3$dm, used %1$d; %4$d likely.</string>
 
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>
@@ -32,5 +32,26 @@
 	<string name="pref_first_bill_day_summary">Day of month that begins a new bill.</string>
 
 	<string name="pref_carrier_rules_title">Carrier billing rules</string>
+
+
+
+	<string name="pref_group_hourly_billing_title">Daytime hours defined</string>
+	<string name="pref_range_start_hour">start hour</string>
+	<string name="pref_range_end_hour">end hour</string>
+	<string name="pref_free_contact0">c0</string>
+	<string name="pref_free_contact1">c1</string>
+	<string name="pref_free_contact2">c2</string>
+	<string name="pref_free_contact3">c3</string>
+	<string name="pref_free_contact4">c4</string>
+	<string name="pref_free_contact5">c5</string>
+	<string name="pref_free_contact6">c6</string>
+	<string name="pref_free_contact7">c7</string>
+	<string name="pref_free_contact8">c8</string>
+	<string name="pref_free_contact9">c9</string>
+
+
+
+
+
 
 </resources>

@@ -85,7 +85,8 @@ public class LogMonitorService extends Service {
                             context.getResources().getString(R.string.notification_overage_occurred_description), 
                             usageData.getUsedTotalMeteredMinutes(),
                             usageData.getUsedTotalMinutes(),
-                            allowedMin
+                            allowedMin,
+                            usageData.getPredictionAtBillMinutes()
                         ), 
                         pendingSeeStats);
 
@@ -98,7 +99,8 @@ public class LogMonitorService extends Service {
                             context.getResources().getString(R.string.notification_overage_prediction_description), 
                             usageData.getUsedTotalMeteredMinutes(),
                             usageData.getUsedTotalMinutes(),
-                            allowedMin
+                            allowedMin,
+                            usageData.getPredictionAtBillMinutes()
                         ), 
                         pendingSeeStats);
 

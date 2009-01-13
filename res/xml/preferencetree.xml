@@ -1,37 +1,106 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-       android:key="@string/id_show_notifications"
-       android:title="Post Notifications?" 
-       android:defaultValue="true"
-	   android:persistent="true"
-       android:summaryOn="Warnings will show in notification bar." 
-       android:summaryOff="No warnings flags will be raised." 
-	/>
-    <ListPreference
-       android:key="@string/id_minute_limit"
-       android:title="@string/pref_min_lim_title" 
-       android:summary="@string/pref_min_lim_summary" 
-	   android:defaultValue="3"
-	   android:persistent="true"
-       android:entries="@array/list_minute_count"
-       android:entryValues="@array/list_minute_count"
-	/>
-    <ListPreference
-       android:key="@string/id_first_bill_day_of_month"
-       android:title="@string/pref_first_bill_day_title" 
-       android:summary="@string/pref_first_bill_day_summary" 
-	   android:defaultValue="15"
-	   android:persistent="true"
-       android:entries="@array/list_days"
-       android:entryValues="@array/list_days"
-	/>
-    <ListPreference
-       android:key="@string/id_carrier_rules"
-       android:title="@string/pref_carrier_rules_title" 
-	   android:defaultValue="0"
-	   android:persistent="true"
-       android:entries="@array/list_carrier_rules"
-       android:entryValues="@array/list_carrier_rule_classes"
-	/>
+<PreferenceScreen 
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orderingFromXml="true">
+	<CheckBoxPreference
+			android:key="@string/id_show_notifications"
+			android:title="Post Notifications?" 
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="Warnings will show in notification bar." 
+			android:summaryOff="No warnings flags will be raised." />
+	<ListPreference
+			android:key="@string/id_minute_limit"
+			android:title="@string/pref_min_lim_title" 
+			android:summary="@string/pref_min_lim_summary" 
+			android:defaultValue="3"
+			android:persistent="true"
+			android:entries="@array/list_minute_count"
+			android:entryValues="@array/list_minute_count" />
+	<ListPreference
+			android:key="@string/id_first_bill_day_of_month"
+			android:title="@string/pref_first_bill_day_title" 
+			android:summary="@string/pref_first_bill_day_summary" 
+			android:defaultValue="15"
+			android:persistent="true"
+			android:entries="@array/list_days"
+			android:entryValues="@array/list_days" />
+	<CheckBoxPreference
+			android:key="@string/id_weekends_free"
+			android:title="Are weekends free?" 
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="Weekends cost nothing." 
+			android:summaryOff="Weekends cost same as weekdays." />
+
+
+	<CheckBoxPreference
+			android:key="@string/id_nights_free"
+			android:title="Are nights free?" 
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="Only daytime hours are billed." 
+			android:summaryOff="Nighttime is billed equally." />
+
+	<PreferenceGroup
+			android:title="@string/pref_group_hourly_billing_title"
+			android:dependency="@string/id_nights_free"
+			android:shouldDisableView="true"
+			android:orderingFromXml="true">
+		<EditTextPreference
+				android:key="@string/id_pref_range_start_hour"
+				android:title="@string/pref_range_start_hour" 
+				android:defaultValue="7"
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_range_end_hour"
+				android:title="@string/pref_range_end_hour" 
+				android:defaultValue="21"
+				android:persistent="true" />
+	</PreferenceGroup>
+
+
+	<CheckBoxPreference
+			android:key="@string/id_some_contacts_free"
+			android:title="Are some contacts always free?" 
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="Some are free always. My Faves, e.g." 
+			android:summaryOff="All contacts are billed equally." />
+	<PreferenceGroup
+			android:title="@string/pref_group_hourly_billing_title"
+			android:dependency="@string/id_some_contacts_free"
+			android:shouldDisableView="true"
+			android:orderingFromXml="true">
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact0"
+				android:title="@string/pref_free_contact0" 
+				android:defaultValue=""
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact1"
+				android:title="@string/pref_free_contact1" 
+				android:defaultValue=""
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact2"
+				android:title="@string/pref_free_contact2" 
+				android:defaultValue=""
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact3"
+				android:title="@string/pref_free_contact3" 
+				android:defaultValue=""
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact4"
+				android:title="@string/pref_free_contact4" 
+				android:defaultValue=""
+				android:persistent="true" />
+		<EditTextPreference
+				android:key="@string/id_pref_free_contact5"
+				android:title="@string/pref_free_contact5" 
+				android:defaultValue=""
+				android:persistent="true" />
+	</PreferenceGroup>
 
 </PreferenceScreen>

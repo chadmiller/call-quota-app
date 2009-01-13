@@ -42,12 +42,13 @@ public class SeeStats extends Activity
         this.configuration = app.conf();
 
         Intent i = new Intent();
-        i.setClassName( "org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService" );
-        startService( i );
+        i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
+        startService(i);
 
         if (this.configuration.getWantUnitTestsP()) {
             AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            runner.run(this.configuration.getMeteringRulesClass());
+            runner.run(Metering.class);
+            runner.run(Call.class);
         }
 
         setContentView(R.layout.main);
@@ -105,10 +106,8 @@ public class SeeStats extends Activity
         mi = menu.add(Menu.NONE, 2, Menu.NONE, "Help");
         mi.setIcon(android.R.drawable.ic_menu_help);
 
-        /*
-        mi = menu.add(Menu.NONE, 3, Menu.NONE, "About");
+        mi = menu.add(Menu.NONE, 3, Menu.NONE, "Costly Contacts");
         mi.setIcon(android.R.drawable.ic_menu_info_details);
-        */
 
 		return true;
 	}
@@ -122,6 +121,9 @@ public class SeeStats extends Activity
 			return true;
 		case 2:
             startActivity(new Intent(this, Help.class));
+			return true;
+		case 3:
+            startActivity(new Intent(this, ShowCostly.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

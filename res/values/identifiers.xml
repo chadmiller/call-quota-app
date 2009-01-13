@@ -7,9 +7,33 @@
 
     <string name="market_self_search_term">pname:org.chad.jeejah.callquota</string>
 
-	<string name="id_carrier_rules">id_carrier_rules</string>
-	<string name="id_minute_limit">id_minute_limit</string>
+	<string name="id_last_configuration_version">id_last_configuration_version</string>
+
+
 	<string name="id_show_notifications">id_show_notifications</string>
+	<string name="id_minute_limit">id_minute_limit</string>
 	<string name="id_first_bill_day_of_month">id_first_bill_day_of_month</string>
-	<string name="id_last_configuration_point">id_last_configuration_point</string>
+	<string name="id_weekends_free">id_weekends_free</string>
+	<string name="id_nights_free">id_nights_free</string>
+	<string name="id_pref_range_start_hour">id_pref_range_start_hour</string>
+	<string name="id_pref_range_end_hour">id_pref_range_end_hour</string>
+	<string name="id_some_contacts_free">id_some_contacts_free</string>
+	<string name="id_pref_free_contact0">id_pref_free_contact0</string>
+	<string name="id_pref_free_contact1">id_pref_free_contact1</string>
+	<string name="id_pref_free_contact2">id_pref_free_contact2</string>
+	<string name="id_pref_free_contact3">id_pref_free_contact3</string>
+	<string name="id_pref_free_contact4">id_pref_free_contact4</string>
+	<string name="id_pref_free_contact5">id_pref_free_contact5</string>
+	<string name="id_pref_free_contact6">id_pref_free_contact6</string>
+	<string name="id_pref_free_contact7">id_pref_free_contact7</string>
+	<string name="id_pref_free_contact8">id_pref_free_contact8</string>
+	<string name="id_pref_free_contact9">id_pref_free_contact9</string>
+
+
+
+	<string name="id_metering_starts_at_call_start">id_metering_starts_at_call_start</string>
+	<string name="id_daytime_beginning_hour">id_daytime_beginning_hour</string>
+	<string name="id_daytime_ending_hour">id_daytime_ending_hour</string>
+
+
 </resources>

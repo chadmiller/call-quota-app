@@ -128,7 +128,7 @@ public class UsageData {
                 assert(callList.length < i);
 
                 long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
-                newCallList[i] = new Call(dateInSec, dateInSec+durationSeconds, meteredMinutes, false);
+                newCallList[i] = new Call(dateInSec, dateInSec+durationSeconds, meteredMinutes, number);
 
                 this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
                 this.usedTotalMeteredMinutes += meteredMinutes;
