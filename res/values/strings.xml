@@ -14,16 +14,16 @@
 	<string name="app_help_4">If you find bugs, please submit them at http://code.google.com/p/androidcallquota/issues/list .</string>
 
 	<string name="notification_overage_prediction_slug">Call time reaching limit.</string>
-	<string name="notification_overage_prediction_title">Too many prime-time calls.</string>
-	<string name="notification_overage_prediction_description">%1$d of %2$d min used this bill.</string>
+	<string name="notification_overage_prediction_title">Dangerously many prime-time calls.</string>
+	<string name="notification_overage_prediction_description">Allowed %3$d, used %1$d so far.</string><!-- 1=all, 2=metered, 3=limit -->
 
 	<string name="notification_overage_occurred_slug">Calls exceeded allotment.</string>
 	<string name="notification_overage_occurred_title">Too many prime-time calls.</string>
-	<string name="notification_overage_occurred_description">Allowed %3$d, used %1$d so far.</string>
+	<string name="notification_overage_occurred_description">Allowed %3$d, used %1$d so far.</string><!-- 1=all, 2=metered, 3=limit -->
 
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>
-	<string name="vis_summary">In %5$d calls comprising %2$d minutes total for bill %3$s to %4$s, %1$d minutes are metered.</string>
+	<string name="vis_summary">In %5$d calls comprising %2$d minutes total for bill %3$s to %4$s, %1$d minutes are metered.</string><!-- 1=metered, 2=all, 3=bill start, 4=bill end, 5=call count -->
 
 	<string name="pref_min_lim_title">Metered minutes allowed</string>
 	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill</string>
