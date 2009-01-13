@@ -50,7 +50,7 @@ public class SeeStats extends Activity
 
         this.usageData = app.usage();
 
-        viz = new Visualization(this, this.configuration, this.usageData);
+        viz = new Visualization(this, this.configuration, this.usageData, getWindowManager().getDefaultDisplay());
 
         ViewGroup root = (ViewGroup) findViewById(R.id.root);
         root.addView(viz, 1);

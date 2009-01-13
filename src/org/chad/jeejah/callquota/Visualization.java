@@ -1,16 +1,17 @@
 package org.chad.jeejah.callquota;
 
 import android.util.Log;
+import android.util.DisplayMetrics;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.Display;
 import android.widget.Toast;
 
 import android.graphics.*;
 
 public class Visualization extends View {
     private final String TAG = "Visualization";
-    private static final int SIZE = 300;
 
     private Paint   mPaint = new Paint();
     private Path    mPath = new Path();
@@ -18,13 +19,17 @@ public class Visualization extends View {
     private Context context;
     private Configuration configuration;
     private UsageData usageData;
+    private int graphWidth, graphHeight;
 
-    public Visualization(Context context, Configuration configuration, UsageData usageData) {
+    public Visualization(Context context, Configuration configuration, UsageData usageData, Display display) {
         super(context);
 
         this.context = context;
         this.configuration = configuration;
         this.usageData = usageData;
+
+        this.graphWidth = display.getWidth() - 16;
+        this.graphHeight = display.getHeight() - 140;
 
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
@@ -33,6 +38,7 @@ public class Visualization extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         Log.d(TAG, "onDraw()");
+
         int firstBillDay = this.configuration.getFirstBillDay();
 
         long graphBeginningOfTimeSec = this.usageData.getBeginningOfPeriodAsMs() / 1000;
@@ -55,7 +61,7 @@ public class Visualization extends View {
         }
 
         float x = 0, y = 0;
-        double pixelsPerSecondH = (double) SIZE / (graphEndOfTimeSec - graphBeginningOfTimeSec);
+        double pixelsPerSecondH = (double) graphWidth / (graphEndOfTimeSec - graphBeginningOfTimeSec);
 
         long prediction;
         try {
@@ -63,7 +69,7 @@ public class Visualization extends View {
         } catch (ArrayIndexOutOfBoundsException e) {
             prediction = 0;
         }
-        double pixelsPerMinuteV = (double) SIZE / (Math.max(
+        double pixelsPerMinuteV = (double) graphHeight / (Math.max(
                 configuration.getBillAllowedMeteredMinutes(),
                 prediction
                 ) * 1.1);
@@ -71,8 +77,8 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_bill_graph_baseline));
             Path p = new Path();
-            p.moveTo(0,    SIZE);
-            p.lineTo(SIZE, SIZE);
+            p.moveTo(0,    graphHeight);
+            p.lineTo(graphWidth, graphHeight);
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
         }
@@ -80,7 +86,7 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_now_date));
             Path p = new Path();
-            p.moveTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), SIZE);
+            p.moveTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), graphHeight);
             p.lineTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), 0);
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
@@ -92,8 +98,8 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_bill_date));
             Path p = new Path();
-            p.moveTo(SIZE, SIZE);
-            p.lineTo(SIZE, 0);
+            p.moveTo(graphWidth, graphHeight);
+            p.lineTo(graphWidth, 0);
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.RIGHT);
@@ -104,8 +110,8 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_limit_time));
             Path p = new Path();
-            p.moveTo(0,    SIZE-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
-            p.lineTo(SIZE, SIZE-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
+            p.moveTo(0,    graphHeight-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
+            p.lineTo(graphWidth, graphHeight-(float)(configuration.getBillAllowedMeteredMinutes() * pixelsPerMinuteV));
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.LEFT);
@@ -114,7 +120,7 @@ public class Visualization extends View {
         }
 
         long meteredMinutesCount = 0;
-        y = (float)SIZE;
+        y = (float)graphHeight;
         for (Call cd: this.usageData.getCallList()) {
             Path path = new Path();
 
@@ -153,8 +159,8 @@ public class Visualization extends View {
 
             prediction = usageData.getPredictionAtBillMinutes();
 
-            x = SIZE;
-            y = (float) (SIZE - (prediction * pixelsPerMinuteV));
+            x = graphWidth;
+            y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
 
             p.lineTo(x, y);
             if (prediction > configuration.getBillAllowedMeteredMinutes())
