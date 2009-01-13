@@ -39,7 +39,6 @@ public class Configuration {
         wantNeverMeteredP_valid = false;
         wantNightsFree_valid = false;
         wantNotificationsP_valid = false;
-        wantUnitTestsP_valid = false;
         warningPercentage_valid = false;
         // :r! grep _valid\; % |awk '{ print $3 }' |sed -e 's/;/ = false;/' |sort
 
@@ -93,18 +92,6 @@ public class Configuration {
             Log.d(TAG, "refreshed meteringRules");
         }
         return this.meteringRules;
-    }
-
-
-    private boolean wantUnitTestsP;
-    private boolean wantUnitTestsP_valid;
-    public boolean getWantUnitTestsP() {
-        if (! this.wantUnitTestsP_valid) {
-            this.wantUnitTestsP = this.sp.getBoolean("wantUnitTests", false);
-            Log.d(TAG, "refreshed wantUnitTestsP");
-            this.wantUnitTestsP_valid = true;
-        }
-        return this.wantUnitTestsP;
     }
 
 

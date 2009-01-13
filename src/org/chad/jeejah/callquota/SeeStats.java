@@ -45,11 +45,6 @@ public class SeeStats extends Activity
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
         startService(i);
 
-        if (this.configuration.getWantUnitTestsP()) {
-            AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            runner.run(Metering.class);
-            runner.run(Call.class);
-        }
 
         setContentView(R.layout.main);
 
@@ -121,6 +116,11 @@ public class SeeStats extends Activity
 			return true;
 		case 2:
             startActivity(new Intent(this, Help.class));
+
+            //AndroidRunner runner = new AndroidRunner(new SoloRunner());
+            //runner.run(Metering.class);
+            //runner.run(Call.class);
+
 			return true;
 		case 3:
             startActivity(new Intent(this, ShowCostly.class));
