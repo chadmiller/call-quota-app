@@ -11,6 +11,13 @@ public class Pref extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferencetree);
+
+        //ListView favesList = 
+
+        //PreferenceScreen myFavesScreen = (PreferenceScreen) findPreference("myfaves_section");
+        //myFavesScreen.bind(
+
+
     }
 
     @Override

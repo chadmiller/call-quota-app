@@ -2,17 +2,17 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orderingFromXml="true">
 	<CheckBoxPreference
-			android:key="@string/id_show_notifications"
-			android:title="Post Notifications?" 
+			android:key="@string/id_show_notificationsP"
+			android:title="@string/pref_title_post_notifications" 
 			android:defaultValue="true"
 			android:persistent="true"
-			android:summaryOn="Warnings will show in notification bar." 
-			android:summaryOff="No warnings flags will be raised." />
+			android:summaryOn="@string/pref_summon_post_notifications" 
+			android:summaryOff="@string/pref_summoff_post_notifications" />
 	<ListPreference
 			android:key="@string/id_minute_limit"
 			android:title="@string/pref_min_lim_title" 
 			android:summary="@string/pref_min_lim_summary" 
-			android:defaultValue="3"
+			android:defaultValue="200"
 			android:persistent="true"
 			android:entries="@array/list_minute_count"
 			android:entryValues="@array/list_minute_count" />
@@ -24,83 +24,76 @@
 			android:persistent="true"
 			android:entries="@array/list_days"
 			android:entryValues="@array/list_days" />
-	<CheckBoxPreference
-			android:key="@string/id_weekends_free"
-			android:title="Are weekends free?" 
-			android:defaultValue="true"
-			android:persistent="true"
-			android:summaryOn="Weekends cost nothing." 
-			android:summaryOff="Weekends cost same as weekdays." />
 
 
-	<CheckBoxPreference
-			android:key="@string/id_nights_free"
-			android:title="Are nights free?" 
-			android:defaultValue="true"
-			android:persistent="true"
-			android:summaryOn="Only daytime hours are billed." 
-			android:summaryOff="Nighttime is billed equally." />
+	<PreferenceScreen
+			android:title="@string/pref_title_adv_settings">
 
-	<PreferenceGroup
-			android:title="@string/pref_group_hourly_billing_title"
-			android:dependency="@string/id_nights_free"
-			android:shouldDisableView="true"
-			android:orderingFromXml="true">
-		<EditTextPreference
-				android:key="@string/id_pref_range_start_hour"
-				android:title="@string/pref_range_start_hour" 
-				android:defaultValue="7"
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_range_end_hour"
-				android:title="@string/pref_range_end_hour" 
-				android:defaultValue="21"
-				android:persistent="true" />
-	</PreferenceGroup>
+		<CheckBoxPreference
+				android:key="@string/id_metering_starts_at_call_startP"
+				android:title="@string/pref_title_start_metering" 
+				android:defaultValue="true"
+				android:persistent="true"
+				android:summaryOn="@string/pref_summon_start_metering" 
+				android:summaryOff="@string/pref_summoff_start_metering" />
 
+		<PreferenceCategory
+				android:title="@string/pref_group_time_based_billing_title">
+			<CheckBoxPreference
+					android:key="@string/id_weekends_freeP"
+					android:title="@string/pref_title_weekends_free" 
+					android:defaultValue="true"
+					android:persistent="true"
+					android:summaryOn="@string/pref_summon_weekends_free" 
+					android:summaryOff="@string/pref_summoff_weekends_free" />
+			<CheckBoxPreference
+					android:key="@string/id_nights_freeP"
+					android:title="@string/pref_title_nights_free" 
+					android:defaultValue="true"
+					android:persistent="true"
+					android:summaryOn="@string/pref_summon_nights_free" 
+					android:summaryOff="@string/pref_summoff_nights_free" />
+			<ListPreference
+					android:key="@string/id_daytime_beginning_hour"
+					android:title="@string/pref_range_start_hour" 
+					android:dependency="@string/id_nights_freeP"
+					android:defaultValue="7"
+					android:entries="@array/list_hours"
+					android:entryValues="@array/list_hours" />
+			<ListPreference
+					android:key="@string/id_daytime_ending_hour"
+					android:title="@string/pref_range_end_hour" 
+					android:defaultValue="21"
+					android:dependency="@string/id_nights_freeP"
+					android:entries="@array/list_hours"
+					android:entryValues="@array/list_hours" />
+		</PreferenceCategory>
 
-	<CheckBoxPreference
-			android:key="@string/id_some_contacts_free"
-			android:title="Are some contacts always free?" 
-			android:defaultValue="true"
-			android:persistent="true"
-			android:summaryOn="Some are free always. My Faves, e.g." 
-			android:summaryOff="All contacts are billed equally." />
-	<PreferenceGroup
-			android:title="@string/pref_group_hourly_billing_title"
-			android:dependency="@string/id_some_contacts_free"
-			android:shouldDisableView="true"
-			android:orderingFromXml="true">
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact0"
-				android:title="@string/pref_free_contact0" 
-				android:defaultValue=""
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact1"
-				android:title="@string/pref_free_contact1" 
-				android:defaultValue=""
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact2"
-				android:title="@string/pref_free_contact2" 
-				android:defaultValue=""
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact3"
-				android:title="@string/pref_free_contact3" 
-				android:defaultValue=""
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact4"
-				android:title="@string/pref_free_contact4" 
-				android:defaultValue=""
-				android:persistent="true" />
-		<EditTextPreference
-				android:key="@string/id_pref_free_contact5"
-				android:title="@string/pref_free_contact5" 
-				android:defaultValue=""
-				android:persistent="true" />
-	</PreferenceGroup>
+	</PreferenceScreen>
+
+	<!--
+	<PreferenceCategory
+			android:title="Always free c title">
+
+		<CheckBoxPreference
+				android:key="@string/id_some_contacts_freeP"
+				android:title="Are some contacts free?" 
+				android:defaultValue="true"
+				android:persistent="true"
+				android:summaryOn="Some are free always. My Faves, e.g." 
+				android:summaryOff="All contacts are billed equally." />
+
+		<PreferenceScreen
+				android:key="myfaves_section"
+				android:dependency="@string/id_some_contacts_freeP"
+				android:summary="summary"
+				android:title="@string/pref_group_faves_list_title">
+			<intent
+					android:action="android.intent.action.MAIN"
+					android:targetPackage="org.chad.jeejah.callquota"
+					android:targetClass="org.chad.jeejah.callquota.FavesSettings" />
+		</PreferenceScreen>
+	</PreferenceCategory>
+	-->
 
 </PreferenceScreen>

@@ -49,7 +49,7 @@ public class Configuration {
     private boolean wantNeverMeteredP;
     public boolean getWantNeverMeteredP() {
         if (! this.wantNeverMeteredP_valid) {
-            this.wantNeverMeteredP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notifications), true);
+            this.wantNeverMeteredP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notificationsP), true);
             Log.d(TAG, "refreshed wantNeverMeteredP");
             this.wantNeverMeteredP_valid = true;
         }
@@ -63,7 +63,7 @@ public class Configuration {
         if (! getWantNeverMeteredP()) {
             int i;
             for (i = 0; i < 10; i++) {
-                String candidate = this.sp.getString(this.ctx.getString(R.string.id_show_notifications), null);
+                String candidate = this.sp.getString(this.ctx.getString(R.string.id_pref_free_contactNFmt, i), "");
                 if (candidate != null) {
                     s.add(Call.getNormalizedNumber(candidate));
                 }
@@ -77,7 +77,7 @@ public class Configuration {
     private boolean wantNotificationsP_valid;
     boolean getWantNotificationsP() {
         if (! this.wantNotificationsP_valid) {
-            this.wantNotificationsP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notifications), true);
+            this.wantNotificationsP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notificationsP), true);
             Log.d(TAG, "refreshed wantNotificationsP");
             this.wantNotificationsP_valid = true;
         }
@@ -99,8 +99,7 @@ public class Configuration {
     private boolean billAllowedMeteredMinutes_valid;
     public long getBillAllowedMeteredMinutes() {
         if (! this.billAllowedMeteredMinutes_valid) {
-            String s = this.sp.getString(this.ctx.getString(R.string.id_minute_limit), "400");
-            this.billAllowedMeteredMinutes = Long.parseLong(s);
+            this.billAllowedMeteredMinutes = Long.decode(this.sp.getString(this.ctx.getString(R.string.id_minute_limit), "400"));
             Log.d(TAG, String.format("refreshed getBillAllowedMeteredMinutes %d", billAllowedMeteredMinutes));
             this.billAllowedMeteredMinutes_valid = true;
         }
@@ -112,7 +111,7 @@ public class Configuration {
     private boolean warningPercentage_valid;
     public int getWarningPercentage() {
         if (! this.warningPercentage_valid) {
-            this.warningPercentage = this.sp.getInt("warningPercentage", 90);
+            this.warningPercentage = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_warning_percentage), "90"));
             Log.d(TAG, "refreshed warningPercentage");
             this.warningPercentage_valid = true;
         }
@@ -124,7 +123,8 @@ public class Configuration {
     private boolean firstBillDay_valid;
     public int getFirstBillDay() {
         if (! this.firstBillDay_valid) {
-            this.firstBillDay = Integer.parseInt(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
+            Log.d(TAG, String.format("firstBillDay as String is '%s'",this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "(unsert)")));
+            this.firstBillDay = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
             Log.d(TAG, "refreshed firstBillDay");
             this.firstBillDay_valid = true;
         }
@@ -142,7 +142,7 @@ public class Configuration {
     private boolean meteringOmitsWeekends;
     public boolean getMeteringOmitsWeekends() {
         if (! this.meteringOmitsWeekends_valid) {
-            this.meteringOmitsWeekends = this.sp.getBoolean(this.ctx.getString(R.string.id_weekends_free), true);
+            this.meteringOmitsWeekends = this.sp.getBoolean(this.ctx.getString(R.string.id_weekends_freeP), true);
             Log.d(TAG, "refreshed meteringOmitsWeekends");
             this.meteringOmitsWeekends_valid = true;
         }
@@ -153,7 +153,7 @@ public class Configuration {
     private boolean meteringStartsAtCallStart;
     public boolean getMeteringStartsAtCallStart() {
         if (! this.meteringStartsAtCallStart_valid) {
-            this.meteringStartsAtCallStart = this.sp.getBoolean(this.ctx.getString(R.string.id_metering_starts_at_call_start), true);
+            this.meteringStartsAtCallStart = this.sp.getBoolean(this.ctx.getString(R.string.id_metering_starts_at_call_startP), true);
             Log.d(TAG, "refreshed meteringStartsAtCallStart");
             this.meteringStartsAtCallStart_valid = true;
         }
@@ -164,7 +164,7 @@ public class Configuration {
     private boolean wantNightsFree;
     public boolean getWantNightsFree() {
         if (! this.wantNightsFree_valid) {
-            this.wantNightsFree = this.sp.getBoolean(this.ctx.getString(R.string.id_nights_free), true);
+            this.wantNightsFree = this.sp.getBoolean(this.ctx.getString(R.string.id_nights_freeP), true);
             Log.d(TAG, "refreshed wantNightsFree");
             this.wantNightsFree_valid = true;
         }
@@ -175,7 +175,12 @@ public class Configuration {
     private int daytimeBeginningHour;
     public int getDaytimeBeginningHour() {
         if (! this.daytimeBeginningHour_valid) {
-            this.daytimeBeginningHour = Integer.parseInt(this.sp.getString(this.ctx.getString(R.string.id_daytime_beginning_hour), "7"));
+            try {
+                this.daytimeBeginningHour = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_daytime_beginning_hour), "7"));
+            } catch (NumberFormatException e) {
+                this.daytimeBeginningHour = 7;
+                Log.d(TAG, "Error in format of daytimeBeginningHour.  Defaulting to " + this.daytimeBeginningHour);
+            }
             Log.d(TAG, "refreshed daytimeBeginningHour" + this.daytimeBeginningHour);
             this.daytimeBeginningHour_valid = true;
         }
@@ -186,7 +191,12 @@ public class Configuration {
     private int daytimeEndHour;
     public int getDaytimeEndHour() {
         if (! this.daytimeEndHour_valid) {
-            this.daytimeEndHour = Integer.parseInt(this.sp.getString(this.ctx.getString(R.string.id_daytime_ending_hour), "21"));
+            try {
+                this.daytimeEndHour = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_daytime_ending_hour), "21"));
+            } catch (NumberFormatException e) {
+                this.daytimeBeginningHour = 21;
+                Log.d(TAG, "Error in format of daytimeEndHour.  Defaulting to " + this.daytimeEndHour);
+            }
             Log.d(TAG, "refreshed daytimeEndHour"+ this.daytimeEndHour);
             this.daytimeEndHour_valid = true;
         }

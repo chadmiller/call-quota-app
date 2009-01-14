@@ -21,21 +21,36 @@
 	<string name="notification_overage_occurred_title">Too many prime-time calls!</string>
 	<string name="notification_overage_occurred_description">Allowed %3$dm, used %1$d; %4$d likely.</string>
 
+
+	<string name="pref_title_post_notifications">Post Notifications?</string>
+	<string name="pref_summon_post_notifications">Warnings will show in notification bar.</string>
+	<string name="pref_summoff_post_notifications">No warnings flags will be raised.</string>
+	<string name="pref_title_adv_settings">Advanced settings</string>
+	<string name="pref_title_start_metering">Start-call metering</string>
+	<string name="pref_summon_start_metering">Entire duration metered as start.</string>
+	<string name="pref_summoff_start_metering">Each minute judged independent of start.</string>
+	<string name="pref_title_weekends_free">Are weekends free?</string>
+	<string name="pref_summon_weekends_free">Weekends cost nothing.</string>
+	<string name="pref_summoff_weekends_free">Weekends cost same as weekdays.</string>
+	<string name="pref_title_nights_free">Are nights free? </string>
+	<string name="pref_summon_nights_free">Only daytime hours are billed.</string>
+	<string name="pref_summoff_nights_free">Nighttime is billed equally.</string>
+
+
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>
-	<string name="vis_summary">In %5$d calls comprising %2$d minutes total for bill %3$s to %4$s, %1$d minutes are metered.</string>
+	<string name="vis_summary">You have used %1$d of %6$d minutes you're allowed.  You\'re predicted to use %7$d in the bill from %3$s to %4$s.</string>
+	<!-- 1 metered min count, 2 total min count, 3 start bill date, 4 end, 5 call count, 6 min limit, 7 prediction -->
 
 	<string name="pref_min_lim_title">Metered minutes allowed</string>
-	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill</string>
+	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill.</string>
 
 	<string name="pref_first_bill_day_title">Bill day start</string>
 	<string name="pref_first_bill_day_summary">Day of month that begins a new bill.</string>
 
-	<string name="pref_carrier_rules_title">Carrier billing rules</string>
 
-
-
-	<string name="pref_group_hourly_billing_title">Daytime hours defined</string>
+	<string name="pref_group_faves_list_title">Always-free contacts</string>
+	<string name="pref_group_time_based_billing_title">Daytime and Weekend Settings</string>
 	<string name="pref_range_start_hour">start hour</string>
 	<string name="pref_range_end_hour">end hour</string>
 	<string name="pref_free_contact0">c0</string>
