@@ -55,11 +55,6 @@ public class Visualization extends View {
 
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
-        if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2) {
-            Toast t = Toast.makeText(this.context, R.string.data_too_short_to_trend, Toast.LENGTH_LONG);
-            t.show();
-        }
-
         float x = 0, y = 0;
         double pixelsPerSecondH = (double) graphWidth / (graphEndOfTimeSec - graphBeginningOfTimeSec);
 
@@ -152,36 +147,41 @@ public class Visualization extends View {
             }
         }
 
-        try {
-            Path p = new Path();
 
-            p.moveTo(x, y);
+        if (this.usageData.getIsSufficientDataToPredictP()) {
+            try {
+                Path p = new Path();
 
-            prediction = usageData.getPredictionAtBillMinutes();
+                p.moveTo(x, y);
 
-            x = graphWidth;
-            y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
+                prediction = usageData.getPredictionAtBillMinutes();
 
-            p.lineTo(x, y);
-            if (prediction > configuration.getBillAllowedMeteredMinutes())
-                paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
-            else
-                paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
+                x = graphWidth;
+                y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
 
-            paint.setStrokeWidth(2);
-            paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, 3));
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(p, paint);
-            paint.setPathEffect(null);
-            paint.setStyle(Paint.Style.FILL);
-            paint.setTextAlign(Paint.Align.RIGHT);
+                p.lineTo(x, y);
+                if (prediction > configuration.getBillAllowedMeteredMinutes())
+                    paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
+                else
+                    paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
 
-            canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-3), paint);
+                paint.setStrokeWidth(2);
+                paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, 3));
+                paint.setStyle(Paint.Style.STROKE);
+                canvas.drawPath(p, paint);
+                paint.setPathEffect(null);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setTextAlign(Paint.Align.RIGHT);
 
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Log.i(TAG, "Can't make prediction with no data available.");
+                canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-3), paint);
+
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Log.i(TAG, "Can't make prediction with no data available.");
+            }
+        } else {
+            Toast t = Toast.makeText(this.context, R.string.data_too_short_to_trend, Toast.LENGTH_LONG);
+            t.show();
         }
-
     }
 
 }

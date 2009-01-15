@@ -10,7 +10,7 @@ public class CallQuotaApplication extends Application {
     private UsageData usageData;
     public UsageData usage() {
         if (this.usageData == null) {
-            this.usageData = new UsageData(this, conf(), TAG);
+            this.usageData = new UsageData(this, conf(), TAG, 0);
         }
         return this.usageData;
     }

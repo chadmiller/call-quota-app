@@ -10,6 +10,31 @@ import android.provider.CallLog.Calls;
 public class UsageData {
     private static final String TAG = "UsageData";
 
+    private int historicalCallCount;
+    public boolean getIsSufficientDataToPredictP() {
+        if (! valid)
+            getCallList(); // has side effects
+
+        if (historicalCallCount > 10) {
+            return true;
+        }
+
+        if (isCurrent()) {
+            long now = java.lang.System.currentTimeMillis();
+            long perBeg = getBeginningOfPeriodAsMs();
+            long perEnd = getEndOfPeriodAsMs();
+
+            if (((float)(now - perBeg) / (float)(perEnd - perBeg)) > 0.2)
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean isCurrent() {
+        return this.nthMonthBack == 0;
+    }
+
     private long usedTotalMinutes;
     public long getUsedTotalMinutes() {
         if (! valid)
@@ -24,11 +49,29 @@ public class UsageData {
         return this.usedTotalMeteredMinutes;
     }
 
+    private long usedTotalMeteredMinutesLastMonth;
+    public long getUsedTotalMeteredMinutesLastMonth() {
+        if (! valid)
+            getCallList(); // has side effects
+        return this.usedTotalMeteredMinutesLastMonth;
+    }
+
+    private boolean beginningOfHistoryAsMs_valid;
+    private long beginningOfHistoryAsMs;
+    public long getBeginningOfHistoryAsMs() {
+        if (! beginningOfHistoryAsMs_valid) {
+            this.beginningOfHistoryAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+1, this.configuration.getFirstBillDay());
+            beginningOfHistoryAsMs_valid = true;
+            Log.d(TAG, "refreshed beginningOfHistoryAsMs");
+        }
+        return this.beginningOfHistoryAsMs;
+    }
+
     private boolean beginningOfPeriodAsMs_valid;
     private long beginningOfPeriodAsMs;
     public long getBeginningOfPeriodAsMs() {
         if (! beginningOfPeriodAsMs_valid) {
-            this.beginningOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, this.configuration.getFirstBillDay());
+            this.beginningOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+1, this.configuration.getFirstBillDay());
             beginningOfPeriodAsMs_valid = true;
             Log.d(TAG, "refreshed beginningOfPeriodAsMs");
         }
@@ -39,7 +82,7 @@ public class UsageData {
     private long endOfPeriodAsMs;
     public long getEndOfPeriodAsMs() {
         if (! endOfPeriodAsMs_valid) {
-            this.endOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, this.configuration.getFirstBillDay());
+            this.endOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack, this.configuration.getFirstBillDay());
             endOfPeriodAsMs_valid = true;
             Log.d(TAG, "refreshed endOfPeriodAsMs");
         }
@@ -55,10 +98,10 @@ public class UsageData {
         try {
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
             long finalPointSec = this.callList[this.callList.length-1].endFromEpochSec;
-            long periodLength = finalPointSec - (getBeginningOfPeriodAsMs() / 1000);
-            double growthInPeriod = (double) getUsedTotalMeteredMinutes();
+            long periodLength = finalPointSec - (getBeginningOfHistoryAsMs() / 1000);
+            double growthInPeriod = (double) (getUsedTotalMeteredMinutesLastMonth() + getUsedTotalMeteredMinutes());
             double growthRate = growthInPeriod / periodLength;
-            long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfPeriodAsMs()) / 1000;
+            long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfHistoryAsMs()) / 1000;
             this.predictionAtBillMinutes = (long) (growthRate * predictionPeriod);
 
             return this.predictionAtBillMinutes;
@@ -71,9 +114,11 @@ public class UsageData {
 
     private Configuration configuration;
     private Context context;
-    UsageData(Context context, Configuration configuration, String owner) {
+    private int nthMonthBack;
+    UsageData(Context context, Configuration configuration, String owner, int nthMonthBack) {
         this.context = context;
         this.configuration = configuration;
+        this.nthMonthBack = nthMonthBack;
 
         invalidate();
     }
@@ -92,16 +137,19 @@ public class UsageData {
         if (valid)
             return callList;
 
+
         Call[] newCallList = null;
         String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
         Cursor cursor;
         
 		ContentResolver cr = this.context.getContentResolver();
-        String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfPeriodAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
+        String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
         cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, null);
 
+        this.usedTotalMeteredMinutesLastMonth = 0;
         this.usedTotalMeteredMinutes = 0;
         this.usedTotalMinutes = 0;
+        this.historicalCallCount = 0;
         newCallList = new Call[cursor.getCount()];
 
         if (cursor.moveToFirst()) {
@@ -123,17 +171,28 @@ public class UsageData {
                 type = cursor.getInt(typeColumn);
                 number = cursor.getString(numberColumn);
 
-                long meteredMinutes = (long) Math.ceil(configuration.getMeteringRules().extractMeteredSeconds(dateInMs, durationSeconds, number, type) / 60.0);
+                boolean isHistoricalP = dateInMs+(durationSeconds*1000) < getBeginningOfPeriodAsMs();
 
-                assert(callList.length < i);
+                long meteredMinutes;
+                
+                meteredMinutes = (long) Math.ceil(configuration.getMeteringRules().extractMeteredSeconds(dateInMs, durationSeconds, number, type) / 60.0);
 
-                long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
-                newCallList[i] = new Call(dateInSec, dateInSec+durationSeconds, meteredMinutes, number);
+                if (isHistoricalP) {
+                    this.historicalCallCount++;
+                    this.usedTotalMeteredMinutesLastMonth += meteredMinutes;
 
-                this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
-                this.usedTotalMeteredMinutes += meteredMinutes;
+                } else {
+                    assert(callList.length < i);
+                    long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
 
-                i++;
+                    newCallList[i] = new Call(dateInSec, dateInSec+durationSeconds, meteredMinutes, number);
+
+                    this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
+                    this.usedTotalMeteredMinutes += meteredMinutes;
+
+                    i++;
+                }
+
             } while (cursor.moveToNext());
 
         } else {
@@ -145,7 +204,6 @@ public class UsageData {
         valid = true;
         return this.callList;
     }
-
 
 }
 /* vim: set et ai sta : */
