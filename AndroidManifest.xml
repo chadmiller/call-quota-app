@@ -30,4 +30,6 @@
     </application>
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<meta-data android:name="org.openintents.updatechecker.UPDATE_URL" android:value="http://web.chad.org/jeejah/callquota/versions" />
+
 </manifest> 
