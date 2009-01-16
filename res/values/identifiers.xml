@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Call Quota</string>
+    <string name="app_name">Cellivoyant</string>
     <string name="app_version">0.2.3</string>
-    <string name="activity_name">Predict Usage</string>
+    <string name="activity_name">Cellivoyant</string>
 	<string name="app_description">Warn when calls are likely to incur extra charges on phone bill</string>
 
     <string name="market_self_search_term">pname:org.chad.jeejah.callquota</string>
