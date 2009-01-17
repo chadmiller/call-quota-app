@@ -53,15 +53,14 @@ public class LogMonitorService extends Service {
             CallQuotaApplication app = (CallQuotaApplication) getApplication();
             Configuration configuration = app.conf();
 
+            if (! configuration.getWantNotificationsP())
+                return;
+
             UsageData usageData = app.usage();
 
             Intent seeStats = new Intent();
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");
             PendingIntent pendingSeeStats = PendingIntent.getActivity(context, 0, seeStats, 0);
-
-            if (! configuration.getWantNotificationsP())
-                return;
-            
 
             // FIXME refactor gBOTS gEOTS nS fBD
             int firstBillDay = configuration.getFirstBillDay();
