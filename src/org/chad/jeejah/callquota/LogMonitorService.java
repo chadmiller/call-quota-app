@@ -15,7 +15,7 @@ import android.database.ContentObserver;
 import android.provider.CallLog.Calls;
 
 public class LogMonitorService extends Service {
-    private static final String LOG_TAG = "LogMonitorService";
+    private static final String LOG_TAG = "CallQuota.LogMonitorService";
     private Handler serviceHandler = null;
     private int counter;
 

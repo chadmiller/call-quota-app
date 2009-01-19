@@ -1,6 +1,7 @@
 package org.chad.jeejah.callquota;
 
 import android.util.Log;
+import android.util.TimingLogger;
 
 import android.content.Context;
 import android.content.ContentResolver;
@@ -8,13 +9,14 @@ import android.database.Cursor;
 import android.provider.CallLog.Calls;
 
 public class UsageData {
-    private static final String TAG = "UsageData";
+    private static final String TAG = "CallQuota.UsageData";
 
     private int historicalCallCount;
     public boolean getIsSufficientDataToPredictP() {
         if (! valid)
             getCallList(); // has side effects
 
+        Log.d(TAG, "getIsSufficientDataToPredictP(): Ten history entries would suffice.  I have " + historicalCallCount);
         if (historicalCallCount > 10) {
             return true;
         }
@@ -24,10 +26,17 @@ public class UsageData {
             long perBeg = getBeginningOfPeriodAsMs();
             long perEnd = getEndOfPeriodAsMs();
 
-            if (((float)(now - perBeg) / (float)(perEnd - perBeg)) > 0.2)
+            float passed = (float)(now - perBeg) / (float)(perEnd - perBeg);
+
+            Log.d(TAG, "getIsSufficientDataToPredictP(): 1/5th of period passed would suffice.  I have " + passed);
+            if (passed > 0.2) {
                 return true;
+            }
+        } else {
+            Log.d(TAG, "getIsSufficientDataToPredictP(): not the current period.  FIXME!");  // FIXME!
         }
 
+        Log.d(TAG, "getIsSufficientDataToPredictP(): Nothing was good enough.  We shouldn't predict.");
         return false;
     }
 
@@ -134,75 +143,80 @@ public class UsageData {
     
     private Call[] callList;
     public Call[] getCallList() {
-        if (valid)
-            return callList;
-
-
-        Call[] newCallList = null;
-        String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
-        Cursor cursor;
+        TimingLogger tl = new TimingLogger(TAG, "getCallList()");
         
-		ContentResolver cr = this.context.getContentResolver();
-        String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
-        cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, null);
+        try {
 
-        this.usedTotalMeteredMinutesLastMonth = 0;
-        this.usedTotalMeteredMinutes = 0;
-        this.usedTotalMinutes = 0;
-        this.historicalCallCount = 0;
-        newCallList = new Call[cursor.getCount()];
+            if (valid)
+                return callList;
 
-        if (cursor.moveToFirst()) {
-            int dateColumn = cursor.getColumnIndex(Calls.DATE); 
-            int durationColumn = cursor.getColumnIndex(Calls.DURATION);
-            int typeColumn = cursor.getColumnIndex(Calls.TYPE);
-            int numberColumn = cursor.getColumnIndex(Calls.NUMBER);
 
-            String phoneNumber; 
+            Call[] newCallList = null;
+            String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
+            Cursor cursor;
+            
+            ContentResolver cr = this.context.getContentResolver();
+            String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
+            cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, null);
 
-            int i = 0;
-            do {
-                long dateInMs, durationSeconds;
-                int type;
-                String number;
+            this.usedTotalMeteredMinutesLastMonth = 0;
+            this.usedTotalMeteredMinutes = 0;
+            this.usedTotalMinutes = 0;
+            this.historicalCallCount = 0;
+            newCallList = new Call[cursor.getCount()];
 
-                dateInMs = cursor.getLong(dateColumn);
-                durationSeconds = cursor.getLong(durationColumn);
-                type = cursor.getInt(typeColumn);
-                number = cursor.getString(numberColumn);
+            if (cursor.moveToFirst()) {
+                int dateColumn = cursor.getColumnIndex(Calls.DATE); 
+                int durationColumn = cursor.getColumnIndex(Calls.DURATION);
+                int typeColumn = cursor.getColumnIndex(Calls.TYPE);
+                int numberColumn = cursor.getColumnIndex(Calls.NUMBER);
 
-                boolean isHistoricalP = dateInMs+(durationSeconds*1000) < getBeginningOfPeriodAsMs();
+                String phoneNumber; 
 
-                long meteredMinutes;
-                
-                meteredMinutes = (long) Math.ceil(configuration.getMeteringRules().extractMeteredSeconds(dateInMs, durationSeconds, number, type) / 60.0);
+                int i = 0;
+                do {
+                    long dateInMs, durationSeconds;
+                    int type;
+                    String number;
 
-                if (isHistoricalP) {
-                    this.historicalCallCount++;
-                    this.usedTotalMeteredMinutesLastMonth += meteredMinutes;
+                    dateInMs = cursor.getLong(dateColumn);
+                    durationSeconds = cursor.getLong(durationColumn);
+                    type = cursor.getInt(typeColumn);
+                    number = cursor.getString(numberColumn);
 
-                } else {
-                    assert(callList.length < i);
-                    long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
+                    boolean isHistoricalP = dateInMs+(durationSeconds*1000) < getBeginningOfPeriodAsMs();
+                    
+                    Call c = configuration.getMeteringRules().recordCallInfo(dateInMs, durationSeconds, number, type);
 
-                    newCallList[i] = new Call(dateInSec, dateInSec+durationSeconds, meteredMinutes, number);
+                    if (isHistoricalP) {
+                        this.historicalCallCount++;
+                        this.usedTotalMeteredMinutesLastMonth += c.meteredMinutes;
 
-                    this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
-                    this.usedTotalMeteredMinutes += meteredMinutes;
+                    } else {
+                        assert(callList.length < i);
+                        long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
 
-                    i++;
-                }
+                        newCallList[i] = c;
 
-            } while (cursor.moveToNext());
+                        this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
+                        this.usedTotalMeteredMinutes += c.meteredMinutes;
 
-        } else {
-            Log.d(TAG, "The provider is empty.  That's okay.");
+                        i++;
+                    }
+
+                } while (cursor.moveToNext());
+
+            } else {
+                Log.d(TAG, "The provider is empty.  That's okay.");
+            }
+            this.callList = newCallList;
+
+            Log.d(TAG, "refreshed usedTotalMinutes, usedTotalMeteredMinutes, callList");
+            valid = true;
+            return this.callList;
+        } finally {
+            tl.dumpToLog();
         }
-        this.callList = newCallList;
-
-        Log.d(TAG, "refreshed usedTotalMinutes, usedTotalMeteredMinutes, callList");
-        valid = true;
-        return this.callList;
     }
 
 }

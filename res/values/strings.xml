@@ -4,18 +4,19 @@
 	<string name="label_now">now</string>
 	<string name="label_bill">bill</string>
 
-	<string name="app_get_started">Before using this program, you need to know four things: <b>1)</b> You must tell it how you're billed (and update it if your bill changes).  <b>2)</b> You can't clear your call log, or it can't make predictions. <b>3)</b> It assumes this phone is the only device that uses your time. <b>4)</b> The author isn't responsible for your bill.</string>
+	<string name="app_get_started">Before using this program, you need to know four things: <b>1)</b> You must tell it how you\'re billed (and update it if your bill changes).  <b>2)</b> You can\'t clear your call log, or it can\'t make predictions. <b>3)</b> It assumes this phone is the only device that uses your time. <b>4)</b> The author isn\'t responsible for your bill.</string>
 
-	<string name="data_too_short_to_trend">There isn't enough information to show an accurate trend.</string>
+	<string name="data_too_short_to_trend">Sorry. There isn\'t enough information to show an accurate trend.</string>
 
 	<string name="app_help_1">This program uses your phone\'s stored call logs to advise you how often you may safely use your phone.  It can raise warnings when you are over your time limit, and it can warn you if you are likely to exhaust your call time allocation prematurely.</string>
 	<string name="app_help_2"><b>Important:  Avoid clearing call history in your phone!</b>  Without accurate call trends, predictions and warnings are impossible or incorrect.  Additionally, this program assumes all calls on your bill use this phone and are represented in the call log; if you move your SIM to other phones, then all bets are off.</string>
 	<string name="app_help_3">The accuracy of this program depends on unreliable factors, so you should not solely rely on it to avoid costs.  The author disclaims all responsibility for its use.  You are solely responsible for your bill.</string>
 	<string name="app_help_4">If you find bugs, please submit them at http://code.google.com/p/androidcallquota/issues/list .</string>
 
-	<string name="notification_overage_prediction_slug">Call time reaching limit.</string>
-	<string name="notification_overage_prediction_title">Dangerously many prime-time calls.</string>
-	<string name="notification_overage_prediction_description">Allowed %3$d, used %1$d so far.</string><!-- 1=all, 2=metered, 3=limit -->
+
+	<string name="notification_overage_prediction_slug">Call time likely too much.</string>
+	<string name="notification_overage_prediction_title">Call rate unsustainable.</string>
+	<string name="notification_overage_prediction_description">Allowed %3$dmin, used %1$d so far.</string><!-- 1=all, 2=metered, 3=limit -->
 
 	<string name="notification_overage_occurred_slug">Calls exceeded allotment.</string>
 	<string name="notification_overage_occurred_title">Too many prime-time calls!</string>
@@ -23,8 +24,8 @@
 
 
 	<string name="pref_title_post_notifications">Post Notifications?</string>
-	<string name="pref_summon_post_notifications">Warnings will show in notification bar.</string>
-	<string name="pref_summoff_post_notifications">No warnings flags will be raised.</string>
+	<string name="pref_summon_post_notifications">Warnings will appear in notification bar.</string>
+	<string name="pref_summoff_post_notifications">No warning flags will be raised.</string>
 	<string name="pref_title_adv_settings">Advanced settings</string>
 	<string name="pref_title_start_metering">Start-call metering</string>
 	<string name="pref_summon_start_metering">Entire duration metered as start.</string>
@@ -39,8 +40,11 @@
 
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>
-	<string name="vis_summary">You have used %1$d of %6$d minutes you're allowed.  You\'re predicted to use %7$d in the bill from %3$s to %4$s.</string>
+
+	<string name="vis_summary">You have used %1$d of %6$d minutes you\'re allowed.  You\'re predicted to use %7$d in the bill from %3$s to %4$s.</string>
 	<!-- 1 metered min count, 2 total min count, 3 start bill date, 4 end, 5 call count, 6 min limit, 7 prediction -->
+	<string name="vis_summary_no_prediction">You have used %1$d of %6$d minutes you\'re allowed.  Unfortunately, it\'s still too early to predict total.</string>
+	<!-- same, but no #7 -->
 
 	<string name="pref_min_lim_title">Metered minutes allowed</string>
 	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill.</string>
@@ -51,18 +55,8 @@
 
 	<string name="pref_group_faves_list_title">Always-free contacts</string>
 	<string name="pref_group_time_based_billing_title">Daytime and Weekend Settings</string>
-	<string name="pref_range_start_hour">start hour</string>
-	<string name="pref_range_end_hour">end hour</string>
-	<string name="pref_free_contact0">c0</string>
-	<string name="pref_free_contact1">c1</string>
-	<string name="pref_free_contact2">c2</string>
-	<string name="pref_free_contact3">c3</string>
-	<string name="pref_free_contact4">c4</string>
-	<string name="pref_free_contact5">c5</string>
-	<string name="pref_free_contact6">c6</string>
-	<string name="pref_free_contact7">c7</string>
-	<string name="pref_free_contact8">c8</string>
-	<string name="pref_free_contact9">c9</string>
+	<string name="pref_range_start_hour">Daytime start</string>
+	<string name="pref_range_end_hour">Daytime end</string>
 
 
 

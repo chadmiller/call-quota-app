@@ -5,7 +5,7 @@ import android.database.ContentObserver;
 
 
 public class CallQuotaApplication extends Application {
-    private static final String TAG = "CallQuotaApplication";
+    private static final String TAG = "CallQuota.CallQuotaApplication";
 
     private UsageData usageData;
     public UsageData usage() {

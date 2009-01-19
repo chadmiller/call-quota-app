@@ -91,7 +91,7 @@
 			<intent
 					android:action="android.intent.action.MAIN"
 					android:targetPackage="org.chad.jeejah.callquota"
-					android:targetClass="org.chad.jeejah.callquota.FavesSettings" />
+					android:targetClass="org.chad.jeejah.callquota.FreeContacts" />
 		</PreferenceScreen>
 	</PreferenceCategory>
 	-->

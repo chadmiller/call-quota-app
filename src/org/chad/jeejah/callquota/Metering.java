@@ -6,8 +6,17 @@ import java.util.GregorianCalendar;
 import android.provider.CallLog.Calls;
 
 class Metering {
-    public static final String TAG = "Metering";
+    public static final String TAG = "CallQuota.Metering";
     Configuration configuration;
+
+    private class CountAndReason {
+        public long countSeconds;
+        public String reason;
+        public CountAndReason(long countSeconds, String reason) {
+            this.countSeconds = countSeconds;
+            this.reason = reason;
+        }
+    }
 
     public Metering(Configuration configuration) {
         this.configuration = configuration;
@@ -33,14 +42,21 @@ class Metering {
     }
 
 
-    public long extractMeteredSeconds(long startTimeInMs, long durationSeconds, String number, int type) {
+    public Call recordCallInfo(long startTimeInMs, long durationSeconds, String number, int type) {
+        long startTimeInSec = startTimeInMs / 1000;
+        CountAndReason cr = extractMeteredSeconds(startTimeInMs, durationSeconds, number, type);
+        return new Call(startTimeInSec, startTimeInSec+durationSeconds, (long) Math.ceil(cr.countSeconds/60.0), number, cr.reason);
+    }
+
+
+    private CountAndReason extractMeteredSeconds(long startTimeInMs, long durationSeconds, String number, int type) {
         if (type == Calls.MISSED_TYPE)
-            return 0;
+            return new CountAndReason(0, "unanswered");
 
         HashSet neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
         if (neverMeteredNormalized != null) {
             if (neverMeteredNormalized.contains(Call.getNormalizedNumber(number))) {
-                return 0;
+                return new CountAndReason(0, "free friend");
             }
         }
 
@@ -53,7 +69,7 @@ class Metering {
     }
 
 
-    private long extractMeteredSecondsContiguousFromStart(long startTimeInMs, long durationSeconds) {
+    private CountAndReason extractMeteredSecondsContiguousFromStart(long startTimeInMs, long durationSeconds) {
         long count;
         assert durationSeconds >= 0;
 
@@ -64,7 +80,7 @@ class Metering {
         if (this.configuration.getMeteringOmitsWeekends()) {
             int dow = calCallStart.get(GregorianCalendar.DAY_OF_WEEK);
             if ((dow < GregorianCalendar.MONDAY) || (dow > GregorianCalendar.FRIDAY)) {
-                return 0;
+                return new CountAndReason(0, "weekend");
             }
         }
 
@@ -78,13 +94,12 @@ class Metering {
 
         assert (period.start==null) == (period.end==null);
         if (period.start == null) {
-            count = 0;
+            return new CountAndReason(0, "UNKNOWN"); // FIXME
         } else if (calCallStart.after(period.start) && calCallStart.before(period.end)) {
-            count = durationSeconds;
+            return new CountAndReason(durationSeconds, "metered!");
         } else {
-            count = 0;
+            return new CountAndReason(0, "nighttime");
         }
-        return count;
     }
 
 
@@ -124,7 +139,7 @@ class Metering {
     };
 
 
-    private long extractMeteredSecondsExactPeriod(long startTimeInMs, long durationSeconds) {
+    private CountAndReason extractMeteredSecondsExactPeriod(long startTimeInMs, long durationSeconds) {
         long ss = durationSeconds;
         assert ss >= 0;
 
@@ -146,7 +161,7 @@ class Metering {
             calCursor.set(GregorianCalendar.SECOND, 59);
             calCursor.set(GregorianCalendar.MILLISECOND, 999);
 
-            totalSeconds += extractMeteredSecondsExactPeriodForDay(calCallStart, calCursor);
+            totalSeconds += extractMeteredSecondsExactPeriodForDay(calCallStart, calCursor).countSeconds;
 
             calCursor.set(GregorianCalendar.HOUR_OF_DAY, 0);
             calCursor.set(GregorianCalendar.MINUTE, 0);
@@ -157,20 +172,20 @@ class Metering {
             calCallStart.setTimeInMillis(calCursor.getTimeInMillis());
         }
 
-        totalSeconds += extractMeteredSecondsExactPeriodForDay(calCallStart, calCallEnd);
+        totalSeconds += extractMeteredSecondsExactPeriodForDay(calCallStart, calCallEnd).countSeconds;
 
         Log.d(TAG, "extractMeteredSeconds(...)  -> " + Long.toString(totalSeconds));
-        return totalSeconds;
+        return new CountAndReason(totalSeconds, "mixed");
     }
 
 
-    protected long extractMeteredSecondsExactPeriodForDay(GregorianCalendar calCallStart, 
+    private CountAndReason extractMeteredSecondsExactPeriodForDay(GregorianCalendar calCallStart, 
             GregorianCalendar calCallEnd) {
 
         if (this.configuration.getMeteringOmitsWeekends()) {
             int dow = calCallStart.get(GregorianCalendar.DAY_OF_WEEK);
             if ((dow < GregorianCalendar.MONDAY) || (dow > GregorianCalendar.FRIDAY)) {
-                return 0;
+                return new CountAndReason(0, "weekend");
             }
         }
 
@@ -189,7 +204,7 @@ class Metering {
         long ss = (calCallEnd.getTimeInMillis() / 1000) - (calCallStart.getTimeInMillis() / 1000);
 
         if (period.start == null) {
-            return 0;
+            return new CountAndReason(0, "UNKNOWn");  // FIXME
         }
 
         //  Cases:
@@ -223,7 +238,7 @@ class Metering {
             }
         }
 
-        return count;
+        return new CountAndReason(count, "mixture");  // FIXME
     }
 
 

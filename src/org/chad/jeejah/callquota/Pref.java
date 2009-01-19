@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceActivity;
 
 public class Pref extends PreferenceActivity {
+    private static final String TAG = "CallQuota.Pref";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

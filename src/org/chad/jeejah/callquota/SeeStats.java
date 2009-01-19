@@ -23,7 +23,7 @@ import org.chad.jeejah.callquota.Call;
 
 public class SeeStats extends Activity
 {
-    private static final String TAG = "SeeStats";
+    private static final String TAG = "CallQuota.SeeStats";
 
     private Visualization viz;
 
@@ -70,16 +70,36 @@ public class SeeStats extends Activity
 
         SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.getDateFormatString());
         TextView description = (TextView) findViewById(R.id.description);
-        description.setText(getResources().getString(
-                R.string.vis_summary, 
-                this.usageData.getUsedTotalMeteredMinutes(), // 1
-                this.usageData.getUsedTotalMinutes(), // 2
-                sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay))), // 3
-                sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay))), // 4
-                this.usageData.getCallList().length, // 5
-                this.configuration.getBillAllowedMeteredMinutes(), // 6
-                this.usageData.getPredictionAtBillMinutes() // 7
-            ));
+        String billStart = sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay)));
+        String billEnd = sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay)));
+        boolean wrotePrediction = false;
+        try {
+            if (usageData.getIsSufficientDataToPredictP()) {
+                description.setText(getResources().getString(
+                        R.string.vis_summary, 
+                        this.usageData.getUsedTotalMeteredMinutes(), // 1
+                        this.usageData.getUsedTotalMinutes(), // 2
+                        billStart, // 3
+                        billEnd, // 4
+                        this.usageData.getCallList().length, // 5
+                        this.configuration.getBillAllowedMeteredMinutes(), // 6
+                        this.usageData.getPredictionAtBillMinutes() // 7
+                    ));
+                wrotePrediction = true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+
+        if (! wrotePrediction)
+            description.setText(getResources().getString(
+                    R.string.vis_summary_no_prediction, 
+                    this.usageData.getUsedTotalMeteredMinutes(), // 1
+                    this.usageData.getUsedTotalMinutes(), // 2
+                    billStart, // 3
+                    billEnd, // 4
+                    this.usageData.getCallList().length, // 5
+                    this.configuration.getBillAllowedMeteredMinutes() // 6
+                ));
 
     }
 
@@ -101,8 +121,8 @@ public class SeeStats extends Activity
         mi = menu.add(Menu.NONE, 2, Menu.NONE, "Help");
         mi.setIcon(android.R.drawable.ic_menu_help);
 
-        mi = menu.add(Menu.NONE, 3, Menu.NONE, "Costly Contacts");
-        mi.setIcon(android.R.drawable.ic_menu_info_details);
+        mi = menu.add(Menu.NONE, 3, Menu.NONE, "Audit");
+        mi.setIcon(android.R.drawable.ic_menu_agenda);
 
 		return true;
 	}
@@ -123,7 +143,7 @@ public class SeeStats extends Activity
 
 			return true;
 		case 3:
-            startActivity(new Intent(this, ShowCostly.class));
+            startActivity(new Intent(this, Audit.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

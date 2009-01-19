@@ -13,19 +13,37 @@ import android.provider.Settings.System;
  * by the user, and (ugh) metering rules.
  */
 public class Configuration {
-    private static final String TAG = "Configuration";
+    private static final String TAG = "CallQuota.Configuration";
     private SharedPreferences sp;
 
     private Context ctx;
     public Configuration(Context ctx, String owner) {
         Log.d(TAG, "Created by " + owner);
-
         this.ctx = ctx;
         this.sp = PreferenceManager.getDefaultSharedPreferences(ctx);
-
         invalidate();
     }
 
+/*
+    public Configuration() {
+        this.ctx = new FakeContextForTesting();
+        this.sp = new FakeSharedPreferacnesForTesting();
+        Log.d(TAG, "Bogus configuration constructed for testing.");
+        invalidate();
+    }
+
+    private class FakeContextForTesting extends Context {
+        public FakeContextForTesting() { }
+        public String getString(int i) { return new String(i); }
+    }
+
+    private class FakeSharedPreferences extends SharedPreferences {
+        public boolean getBoolean(String key, boolean defaultValue) { return defaultValue; }
+        public int getInt(String key, int defaultValue) { return defaultValue; }
+        public long getLong(String key, long defaultValue) { return defaultValue; }
+        public String getString(String key, String defaultValue) { return defaultValue; }
+    }
+*/
 
     public void invalidate() {
 
@@ -135,6 +153,12 @@ public class Configuration {
     public String getDateFormatString() {
         //this.dateFormatString = this.ctx.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
         return "yyyy-MM-dd";  //  FIXME
+    }
+
+
+    public String getDateTimeFormatString() {
+        //this.dateFormatString = this.ctx.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
+        return "yyyy-MM-dd HH:mm";  //  FIXME
     }
 
 
