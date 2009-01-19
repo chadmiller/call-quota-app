@@ -40,8 +40,7 @@
 
 	<string name="vis_prediction_description">predicted used: %1$d</string>
 	<string name="vis_limit_description">%1$d minutes in plan</string>
-
-	<string name="vis_summary">You have used %1$d of %6$d minutes you\'re allowed.  You\'re predicted to use %7$d in the bill from %3$s to %4$s.</string>
+	<string name="vis_summary">You have used %1$d of %6$d minutes you pay for.  You\'re predicted to use %7$d in the bill from %3$s to %4$s.</string>
 	<!-- 1 metered min count, 2 total min count, 3 start bill date, 4 end, 5 call count, 6 min limit, 7 prediction -->
 	<string name="vis_summary_no_prediction">You have used %1$d of %6$d minutes you\'re allowed.  Unfortunately, it\'s still too early to predict total.</string>
 	<!-- same, but no #7 -->
