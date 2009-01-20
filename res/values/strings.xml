@@ -48,7 +48,7 @@
 	<string name="pref_min_lim_title">Metered minutes allowed</string>
 	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill.</string>
 
-	<string name="pref_first_bill_day_title">Bill day start</string>
+	<string name="pref_first_bill_day_title">Day of month bill closes</string>
 	<string name="pref_first_bill_day_summary">Day of month that begins a new bill.</string>
 
 
@@ -56,10 +56,5 @@
 	<string name="pref_group_time_based_billing_title">Daytime and Weekend Settings</string>
 	<string name="pref_range_start_hour">Daytime start</string>
 	<string name="pref_range_end_hour">Daytime end</string>
-
-
-
-
-
 
 </resources>

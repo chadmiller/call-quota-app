@@ -1,6 +1,7 @@
 package org.chad.jeejah.callquota;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -29,7 +30,7 @@ public class SeeStats extends Activity
 
     private Configuration configuration;
     private UsageData usageData;
-
+    private NotificationManager notMan;
 
     /** Called when the activity is first created. */
     @Override
@@ -44,7 +45,6 @@ public class SeeStats extends Activity
         Intent i = new Intent();
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
         startService(i);
-
 
         setContentView(R.layout.main);
 
@@ -66,12 +66,14 @@ public class SeeStats extends Activity
         super.onResume();
         Log.d(TAG, "onResume()");
 
+        NotificationManager notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notMan.cancelAll();
         int firstBillDay = this.configuration.getFirstBillDay();
 
         SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.getDateFormatString());
         TextView description = (TextView) findViewById(R.id.description);
-        String billStart = sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay)));
-        String billEnd = sdf.format(new Date(this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay)));
+        String billStart = sdf.format(new Date(this.usageData.getBeginningOfPeriodAsMs()));
+        String billEnd = sdf.format(new Date(this.usageData.getEndOfPeriodAsMs()));
         boolean wrotePrediction = false;
         try {
             if (usageData.getIsSufficientDataToPredictP()) {
@@ -81,7 +83,7 @@ public class SeeStats extends Activity
                         this.usageData.getUsedTotalMinutes(), // 2
                         billStart, // 3
                         billEnd, // 4
-                        this.usageData.getCallList().length, // 5
+                        this.usageData.getCallList().size(), // 5
                         this.configuration.getBillAllowedMeteredMinutes(), // 6
                         this.usageData.getPredictionAtBillMinutes() // 7
                     ));
@@ -97,7 +99,7 @@ public class SeeStats extends Activity
                     this.usageData.getUsedTotalMinutes(), // 2
                     billStart, // 3
                     billEnd, // 4
-                    this.usageData.getCallList().length, // 5
+                    this.usageData.getCallList().size(), // 5
                     this.configuration.getBillAllowedMeteredMinutes() // 6
                 ));
 
@@ -132,7 +134,7 @@ public class SeeStats extends Activity
 	{
 		switch (item.getItemId()) {
 		case 1:
-            startActivity(new Intent(this, Pref.class));
+            startActivityForResult(new Intent(this, Pref.class), 1);
 			return true;
 		case 2:
             startActivity(new Intent(this, Help.class));
@@ -148,6 +150,15 @@ public class SeeStats extends Activity
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == 1) {
+            configuration.invalidate();
+            usageData.invalidate();
+        }
+    }
 }
 
 /* vim: set et ai sta : */

@@ -22,7 +22,7 @@ public class Pref extends PreferenceActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         // The preferences are already saved by this point.
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
 

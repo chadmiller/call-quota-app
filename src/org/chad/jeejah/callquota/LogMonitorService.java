@@ -18,8 +18,6 @@ public class LogMonitorService extends Service {
     private static final String LOG_TAG = "CallQuota.LogMonitorService";
     private Handler serviceHandler = null;
     private int counter;
-
-    private Notification note;
     private NotificationManager notMan;
 
     @Override
@@ -75,6 +73,7 @@ public class LogMonitorService extends Service {
 
             long allowedMin = configuration.getBillAllowedMeteredMinutes();
 
+            Notification note = null;
             if (usageData.getUsedTotalMeteredMinutes() > allowedMin) {
                 note = new Notification(R.drawable.cost_notification, context.getResources().getString(R.string.notification_overage_occurred_slug), java.lang.System.currentTimeMillis());
                 note.setLatestEventInfo(
@@ -105,9 +104,11 @@ public class LogMonitorService extends Service {
 
             }
 
+            notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (note != null) {
-                notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 notMan.notify(13, note);
+            } else {
+                notMan.cancel(13);
             }
 
         }

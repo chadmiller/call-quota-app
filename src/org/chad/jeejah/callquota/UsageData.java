@@ -8,6 +8,9 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.CallLog.Calls;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class UsageData {
     private static final String TAG = "CallQuota.UsageData";
 
@@ -106,7 +109,8 @@ public class UsageData {
 
         try {
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            long finalPointSec = this.callList[this.callList.length-1].endFromEpochSec;
+            assert this.callList.get(this.callList.size()-1) != null;
+            long finalPointSec = this.callList.get(this.callList.size()-1).endFromEpochSec;
             long periodLength = finalPointSec - (getBeginningOfHistoryAsMs() / 1000);
             double growthInPeriod = (double) (getUsedTotalMeteredMinutesLastMonth() + getUsedTotalMeteredMinutes());
             double growthRate = growthInPeriod / periodLength;
@@ -141,8 +145,8 @@ public class UsageData {
     }
 
     
-    private Call[] callList;
-    public Call[] getCallList() {
+    private List<Call> callList;
+    public List<Call> getCallList() {
         TimingLogger tl = new TimingLogger(TAG, "getCallList()");
         
         try {
@@ -150,8 +154,6 @@ public class UsageData {
             if (valid)
                 return callList;
 
-
-            Call[] newCallList = null;
             String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
             Cursor cursor;
             
@@ -163,7 +165,7 @@ public class UsageData {
             this.usedTotalMeteredMinutes = 0;
             this.usedTotalMinutes = 0;
             this.historicalCallCount = 0;
-            newCallList = new Call[cursor.getCount()];
+            List<Call> newCallList = new ArrayList<Call>(cursor.getCount());
 
             if (cursor.moveToFirst()) {
                 int dateColumn = cursor.getColumnIndex(Calls.DATE); 
@@ -173,7 +175,6 @@ public class UsageData {
 
                 String phoneNumber; 
 
-                int i = 0;
                 do {
                     long dateInMs, durationSeconds;
                     int type;
@@ -193,15 +194,12 @@ public class UsageData {
                         this.usedTotalMeteredMinutesLastMonth += c.meteredMinutes;
 
                     } else {
-                        assert(callList.length < i);
                         long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
 
-                        newCallList[i] = c;
+                        newCallList.add(c);
 
                         this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
                         this.usedTotalMeteredMinutes += c.meteredMinutes;
-
-                        i++;
                     }
 
                 } while (cursor.moveToNext());
@@ -215,6 +213,7 @@ public class UsageData {
             valid = true;
             return this.callList;
         } finally {
+            assert this.callList != null;
             tl.dumpToLog();
         }
     }
