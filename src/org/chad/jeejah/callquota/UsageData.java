@@ -104,6 +104,11 @@ public class UsageData {
     private long predictionAtBillMinutes;
     /** Prediction is never cached, as it depends on the current time. */
     public long getPredictionAtBillMinutes() {
+        if (! isCurrent()) {
+            Log.d(TAG, "getPredictionAtBillMinutes():  Since we're not current, instead of predicting, we just return what happened.  The caller should be smarter.");
+            return getUsedTotalMeteredMinutes();
+        }
+
         if (! valid)
             getCallList(); // has side effects
 
