@@ -21,6 +21,7 @@ public class Visualization extends View {
     private Configuration configuration;
     private UsageData usageData;
     private int graphWidth, graphHeight;
+    private final static int padding = 2;
 
     public Visualization(Context context, Configuration configuration, UsageData usageData, Display display) {
         super(context);
@@ -29,11 +30,19 @@ public class Visualization extends View {
         this.configuration = configuration;
         this.usageData = usageData;
 
-        this.graphWidth = display.getWidth() - 16;
-        this.graphHeight = display.getHeight() - 140;
+        this.graphWidth = display.getWidth() - padding - padding;
+        this.graphHeight = display.getHeight() - 160 - padding - padding;
+
+        setMinimumHeight(this.graphHeight);
+        setBackgroundResource(R.drawable.vis_background);
 
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(widthMeasureSpec, this.graphHeight);
     }
 
     @Override
@@ -47,12 +56,12 @@ public class Visualization extends View {
             long graphBeginningOfTimeSec = this.usageData.getBeginningOfPeriodAsMs() / 1000;
             long graphEndOfTimeSec = this.usageData.getEndOfPeriodAsMs()/ 1000;
 
+            canvas.translate(padding, 0);
+
             Resources res = getResources();
 
             Paint paint = mPaint;
             paint.setPathEffect(null);
-
-            canvas.translate(10, 10);
 
             paint.setStrokeWidth(0);
 

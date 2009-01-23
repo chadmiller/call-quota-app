@@ -17,9 +17,6 @@ import android.content.Intent;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-import org.punit.runner.SoloRunner;
-import org.punit.runner.AndroidRunner;
-
 import org.chad.jeejah.callquota.Call;
 
 public class SeeStats extends Activity
@@ -103,6 +100,15 @@ public class SeeStats extends Activity
                     this.configuration.getBillAllowedMeteredMinutes() // 6
                 ));
 
+
+
+        TextView rules = (TextView) findViewById(R.id.rules);
+        rules.setText("Assuming local time zone for bill; weekends are " + 
+                (this.configuration.getMeteringOmitsWeekends() ? "free" : "metered") + "; nights are " +
+                (! this.configuration.getWantNightsFree() ? "metered" : 
+                    (String.format("free after %d o'clock and before %d o'clock", this.configuration.getDaytimeEndHour(), this.configuration.getDaytimeBeginningHour()))
+                    ) + ".");
+
     }
 
     /*
@@ -138,11 +144,6 @@ public class SeeStats extends Activity
 			return true;
 		case 2:
             startActivity(new Intent(this, Help.class));
-
-            //AndroidRunner runner = new AndroidRunner(new SoloRunner());
-            //runner.run(Metering.class);
-            //runner.run(Call.class);
-
 			return true;
 		case 3:
             startActivity(new Intent(this, Audit.class));

@@ -18,6 +18,17 @@
 			android:gravity="center"
 			android:lineSpacingMultiplier="1.2"
 			/>
+
+		<!-- viz at position 1 -->
+
+		<TextView  
+			android:id="@+id/rules"
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:hint="No data."
+			android:gravity="center"
+			android:lineSpacingMultiplier="1.2"
+			/>
 	</LinearLayout>
 </LinearLayout>
 
