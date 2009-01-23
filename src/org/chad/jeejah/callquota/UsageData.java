@@ -72,7 +72,7 @@ public class UsageData {
     private long beginningOfHistoryAsMs;
     public long getBeginningOfHistoryAsMs() {
         if (! beginningOfHistoryAsMs_valid) {
-            this.beginningOfHistoryAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+1, this.configuration.getFirstBillDay());
+            this.beginningOfHistoryAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+2, this.configuration.getFirstBillDay());
             beginningOfHistoryAsMs_valid = true;
             Log.d(TAG, "refreshed beginningOfHistoryAsMs");
         }
@@ -146,6 +146,7 @@ public class UsageData {
         this.valid = false;
         this.endOfPeriodAsMs_valid = false;
         this.beginningOfPeriodAsMs_valid = false;
+        this.beginningOfHistoryAsMs_valid = false;
         Log.i(TAG, "cached data invalidated");
     }
 
@@ -156,8 +157,12 @@ public class UsageData {
         
         try {
 
-            if (valid)
+            if (valid) {
+                Log.d(TAG, "Using cached callList.");
                 return callList;
+            } else {
+                Log.d(TAG, "Starting new callList.");
+            }
 
             String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
             Cursor cursor;
