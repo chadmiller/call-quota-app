@@ -114,8 +114,10 @@ public class UsageData {
 
             double growthInPeriod = (double) (getUsedTotalMeteredMinutesLastMonth() + getUsedTotalMeteredMinutes());
             double growthRate = growthInPeriod / periodLength;
-            long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfHistoryAsMs()) / 1000;
+
+            long predictionPeriod = getEndOfPeriodAsMs()/1000 - nowSec;
             this.predictionAtBillMinutes = (long) (growthRate * predictionPeriod);
+            this.predictionAtBillMinutes += getUsedTotalMeteredMinutes();
 
             return this.predictionAtBillMinutes;
 
