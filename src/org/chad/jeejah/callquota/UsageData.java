@@ -19,7 +19,6 @@ public class UsageData {
         if (! valid)
             getCallList(); // has side effects
 
-        Log.d(TAG, "getIsSufficientDataToPredictP(): Ten history entries would suffice.  I have " + historicalCallCount);
         if (historicalCallCount > 10) {
             return true;
         }
@@ -30,16 +29,13 @@ public class UsageData {
             long perEnd = getEndOfPeriodAsMs();
 
             float passed = (float)(now - perBeg) / (float)(perEnd - perBeg);
-
-            Log.d(TAG, "getIsSufficientDataToPredictP(): 1/5th of period passed would suffice.  I have " + passed);
             if (passed > 0.2) {
                 return true;
             }
         } else {
-            Log.d(TAG, "getIsSufficientDataToPredictP(): not the current period.  FIXME!");  // FIXME!
+            Log.w(TAG, "getIsSufficientDataToPredictP(): not the current period.  FIXME!");  // FIXME!
         }
 
-        Log.d(TAG, "getIsSufficientDataToPredictP(): Nothing was good enough.  We shouldn't predict.");
         return false;
     }
 
@@ -114,9 +110,8 @@ public class UsageData {
 
         try {
             long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            assert this.callList.get(this.callList.size()-1) != null;
-            long finalPointSec = this.callList.get(this.callList.size()-1).endFromEpochSec;
-            long periodLength = finalPointSec - (getBeginningOfHistoryAsMs() / 1000);
+            long periodLength = nowSec - (getBeginningOfHistoryAsMs() / 1000);
+
             double growthInPeriod = (double) (getUsedTotalMeteredMinutesLastMonth() + getUsedTotalMeteredMinutes());
             double growthRate = growthInPeriod / periodLength;
             long predictionPeriod = (getEndOfPeriodAsMs() - getBeginningOfHistoryAsMs()) / 1000;
@@ -158,10 +153,7 @@ public class UsageData {
         try {
 
             if (valid) {
-                Log.d(TAG, "Using cached callList.");
                 return callList;
-            } else {
-                Log.d(TAG, "Starting new callList.");
             }
 
             String[] projection = { Calls.DATE, Calls.DURATION, Calls.TYPE, Calls.NUMBER };
@@ -169,7 +161,7 @@ public class UsageData {
             
             ContentResolver cr = this.context.getContentResolver();
             String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
-            cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, null);
+            cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, Calls.DATE);
 
             this.usedTotalMeteredMinutesLastMonth = 0;
             this.usedTotalMeteredMinutes = 0;
@@ -224,7 +216,6 @@ public class UsageData {
             return this.callList;
         } finally {
             assert this.callList != null;
-            tl.dumpToLog();
         }
     }
 

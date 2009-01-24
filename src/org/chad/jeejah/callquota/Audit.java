@@ -87,8 +87,6 @@ public class Audit extends Activity {
 
             this.table.addView(tr);
         }
-
-        Log.d(TAG, "onCreate() ran activity");
     }
 
     @Override

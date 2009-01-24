@@ -34,7 +34,6 @@ public class SeeStats extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate()");
 
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
         this.configuration = app.conf();
@@ -61,7 +60,6 @@ public class SeeStats extends Activity
     public void onResume()
     {
         super.onResume();
-        Log.d(TAG, "onResume()");
 
         NotificationManager notMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notMan.cancelAll();
@@ -110,13 +108,6 @@ public class SeeStats extends Activity
                     ) + ".");
 
     }
-
-    /*
-    @Override
-    protected void onStop(){
-       super.onStop();
-    }
-    */
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu)

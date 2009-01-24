@@ -141,7 +141,6 @@ public class Configuration {
     private boolean firstBillDay_valid;
     public int getFirstBillDay() {
         if (! this.firstBillDay_valid) {
-            Log.d(TAG, String.format("firstBillDay as String is '%s'",this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "(unsert)")));
             this.firstBillDay = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
             Log.d(TAG, "refreshed firstBillDay");
             this.firstBillDay_valid = true;
@@ -203,7 +202,7 @@ public class Configuration {
                 this.daytimeBeginningHour = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_daytime_beginning_hour), "7"));
             } catch (NumberFormatException e) {
                 this.daytimeBeginningHour = 7;
-                Log.d(TAG, "Error in format of daytimeBeginningHour.  Defaulting to " + this.daytimeBeginningHour);
+                Log.e(TAG, "Error in format of daytimeBeginningHour.  Defaulting to " + this.daytimeBeginningHour);
             }
             Log.d(TAG, "refreshed daytimeBeginningHour" + this.daytimeBeginningHour);
             this.daytimeBeginningHour_valid = true;
@@ -219,7 +218,7 @@ public class Configuration {
                 this.daytimeEndHour = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_daytime_ending_hour), "21"));
             } catch (NumberFormatException e) {
                 this.daytimeBeginningHour = 21;
-                Log.d(TAG, "Error in format of daytimeEndHour.  Defaulting to " + this.daytimeEndHour);
+                Log.e(TAG, "Error in format of daytimeEndHour.  Defaulting to " + this.daytimeEndHour);
             }
             Log.d(TAG, "refreshed daytimeEndHour"+ this.daytimeEndHour);
             this.daytimeEndHour_valid = true;

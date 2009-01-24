@@ -29,7 +29,6 @@ public class LogMonitorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(LOG_TAG,"onCreate");
 
         serviceHandler = new Handler();
         ContentResolver contentResolver = getContentResolver();

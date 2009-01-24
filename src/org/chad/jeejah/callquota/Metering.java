@@ -25,7 +25,6 @@ class Metering {
 
 	/** Find the instant that ends a billing period. */
     public long getEndOfNthBillBackAsMs(int n, int billEndDayOfMonth) {
-		Log.d(TAG, String.format("getEndOfNthBillBackAsMs: last day is %d", billEndDayOfMonth));
         GregorianCalendar billEnd = new GregorianCalendar();
 		
 		/* If the last day is between the start of the month and now, then the
@@ -174,7 +173,6 @@ class Metering {
 
         totalSeconds += extractMeteredSecondsExactPeriodForDay(calCallStart, calCallEnd).countSeconds;
 
-        Log.d(TAG, "extractMeteredSeconds(...)  -> " + Long.toString(totalSeconds));
         return new CountAndReason(totalSeconds, "mixed");
     }
 
