@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Time Cop</string>
-    <string name="app_version">0.2.7</string>
+    <string name="app_version">0.2.8</string>
     <string name="activity_name">Time Cop</string>
 	<string name="app_description">Predict and warn when calls are likely to incur extra charges on phone bill</string>
 
