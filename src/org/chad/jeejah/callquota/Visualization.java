@@ -183,7 +183,7 @@ public class Visualization extends View {
                     paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
 
                 paint.setStrokeWidth(2);
-                paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, this.phase));
+                paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, this.phase));  //  == 6
                 paint.setStyle(Paint.Style.STROKE);
                 canvas.drawPath(p, paint);
                 paint.setPathEffect(null);
@@ -192,11 +192,11 @@ public class Visualization extends View {
 
                 canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-3), paint);
 
-                this.phase = (this.phase + 5.5F);
-                if (this.phase > 60.0)
-                    this.phase -= 54.0;
+                this.phase = (this.phase + 6.0F - 0.8F);  //   creep by some amount, backward.
+                while (this.phase > 6.0) this.phase -= 6.0F;  //   MOD of float.  Grr.
+
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(170);
                     invalidate();
                 } catch (InterruptedException e) {
                     // throw away
