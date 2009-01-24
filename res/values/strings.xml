@@ -4,14 +4,14 @@
 	<string name="label_now">now</string>
 	<string name="label_bill">bill</string>
 
-	<string name="app_get_started">Before using this program, you need to know four things: <b>1)</b> You must tell it how you\'re billed (and update it if your bill changes).  <b>2)</b> You can\'t clear your call log, or it can\'t make predictions. <b>3)</b> It assumes this phone is the only device that uses your time. <b>4)</b> The author isn\'t responsible for your bill.</string>
+	<string name="app_get_started">Before using this program, you need to know four things: <b>1)</b> You must tell it how you\'re billed (and update it if your bill changes).  <b>2)</b> It needs several days of call history to work, which means you can\'t clear your call log, or it can\'t make predictions. <b>3)</b> It assumes this phone is the only device that uses your time. <b>4)</b> The author isn\'t responsible for your bill.</string>
 
 	<string name="data_too_short_to_trend">Sorry. There isn\'t enough information to show an accurate trend.</string>
 
 	<string name="app_help_1">This program uses your phone\'s stored call logs to advise you how often you may safely use your phone.  It can raise warnings when you are over your time limit, and it can warn you if you are likely to exhaust your call time allocation prematurely.</string>
 	<string name="app_help_2"><b>Important:  Avoid clearing call history in your phone!</b>  Without accurate call trends, predictions and warnings are impossible or incorrect.  Additionally, this program assumes all calls on your bill use this phone and are represented in the call log; if you move your SIM to other phones, then all bets are off.</string>
 	<string name="app_help_3">The accuracy of this program depends on unreliable factors, so you should not solely rely on it to avoid costs.  The author disclaims all responsibility for its use.  You are solely responsible for your bill.</string>
-	<string name="app_help_4">If you find bugs, please submit them at http://code.google.com/p/androidcallquota/issues/list .</string>
+	<string name="app_help_4">If you find bugs, please submit them at http://bit.ly/timecop .</string>
 
 
 	<string name="notification_overage_prediction_slug">Call time likely too much.</string>
