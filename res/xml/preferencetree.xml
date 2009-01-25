@@ -71,7 +71,6 @@
 
 	</PreferenceScreen>
 
-	<!--
 	<PreferenceCategory
 			android:title="Always free c title">
 
@@ -94,6 +93,5 @@
 					android:targetClass="org.chad.jeejah.callquota.FreeContacts" />
 		</PreferenceScreen>
 	</PreferenceCategory>
-	-->
 
 </PreferenceScreen>

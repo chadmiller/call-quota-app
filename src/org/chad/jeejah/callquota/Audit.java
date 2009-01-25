@@ -27,6 +27,8 @@ public class Audit extends Activity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        setTitle(R.string.title_audit);
+
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
         this.usageData = app.usage();
         this.configuration = app.conf();
