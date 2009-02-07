@@ -101,19 +101,22 @@ public class FreeContacts extends ListActivity {
     private Set<ContactInfo> getFreeContacts() {
         Cursor c = this.db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
 
-        startManagingCursor(c);
+        try {
 
-        if (c.moveToFirst()) {
-            int numberColumn = c.getColumnIndex("number"); 
-            int numberKeyColumn = c.getColumnIndex("number_key"); 
-            do {
-                contacts.add(new ContactInfo(c.getString(numberColumn), c.getString(numberKeyColumn)));
-            } while (c.moveToNext());
-        } else {
-            Log.d(TAG, "Can't reach first row.");
+            if (c.moveToFirst()) {
+                int numberColumn = c.getColumnIndex("number"); 
+                int numberKeyColumn = c.getColumnIndex("number_key"); 
+                do {
+                    contacts.add(new ContactInfo(c.getString(numberColumn), c.getString(numberKeyColumn)));
+                } while (c.moveToNext());
+            } else {
+                Log.d(TAG, "Can't reach first row.");
+            }
+
+            return contacts;
+        } finally {
+            c.close();
         }
-
-        return contacts;
     }
 
     private MatrixCursor getFreeContactsCursor() {
@@ -161,8 +164,6 @@ public class FreeContacts extends ListActivity {
 
         ContentResolver cr = getContentResolver();
         Cursor allContactsCursor = cr.query(Contacts.Phones.CONTENT_URI, queriedProjection, null, null, Contacts.PhonesColumns.NUMBER_KEY);
-
-        startManagingCursor(allContactsCursor);
 
         final int accNamePosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PeopleColumns.DISPLAY_NAME);
         final int accLabelPosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.LABEL);
@@ -229,15 +230,19 @@ public class FreeContacts extends ListActivity {
             ContentResolver cr = getContentResolver();
             Cursor c = cr.query(picked, queriedProjection, null, null, null);
 
-            if (c.moveToFirst()) {
-                int numberColumn = c.getColumnIndex(Contacts.PhonesColumns.NUMBER); 
-                int numberKeyColumn = c.getColumnIndex(Contacts.PhonesColumns.NUMBER_KEY); 
+            try {
+                if (c.moveToFirst()) {
+                    int numberColumn = c.getColumnIndex(Contacts.PhonesColumns.NUMBER); 
+                    int numberKeyColumn = c.getColumnIndex(Contacts.PhonesColumns.NUMBER_KEY); 
 
-                do {
-                    contacts.add(new ContactInfo(c.getString(numberKeyColumn), c.getString(numberColumn)));
-                } while (c.moveToNext());
-            } else {
-                Log.d(TAG, "Can't reach first row.");
+                    do {
+                        contacts.add(new ContactInfo(c.getString(numberKeyColumn), c.getString(numberColumn)));
+                    } while (c.moveToNext());
+                } else {
+                    Log.d(TAG, "Can't reach first row.");
+                }
+            } finally {
+                c.close();
             }
             
         } else {

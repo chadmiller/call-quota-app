@@ -87,21 +87,28 @@ public class Configuration {
 
                 FreeContactsDb fcdb = new FreeContactsDb(this.ctx, "freecontacts", null, 1);
                 SQLiteDatabase db = fcdb.getWritableDatabase();
+                try {
 
-                Cursor c = db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
+                    Cursor c = db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
+                    try {
 
-                if (c.moveToFirst()) {
-                    int numberColumn = c.getColumnIndex("number"); 
-                    int numberKeyColumn = c.getColumnIndex("number_key"); 
-                    do {
-                        String n = c.getString(numberKeyColumn);
-                        numbersNeverMetered.add(Call.getNormalizedNumber(n));
-                    } while (c.moveToNext());
-                } else {
-                    Log.w(TAG, "getNumbersNeverMetered: Can't seek to beginning.");
+                        if (c.moveToFirst()) {
+                            int numberColumn = c.getColumnIndex("number"); 
+                            int numberKeyColumn = c.getColumnIndex("number_key"); 
+                            do {
+                                String n = c.getString(numberKeyColumn);
+                                numbersNeverMetered.add(Call.getNormalizedNumber(n));
+                            } while (c.moveToNext());
+                        } else {
+                            Log.w(TAG, "getNumbersNeverMetered: Can't seek to beginning.");
+                        }
+                    } finally {
+                        c.close();
+                    }
+
+                } finally {
+                    db.close();
                 }
-
-                db.close();
             }
         }
         getNumbersNeverMetered_valid = true;
