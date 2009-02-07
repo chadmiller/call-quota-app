@@ -76,12 +76,10 @@ public class FreeContacts extends ListActivity {
         }
 
         public int compareTo(ContactInfo other) {
-            Log.d(TAG, "compareTo()");
             return this.numberKey.compareTo(other.numberKey);
         }
 
         public boolean equals(ContactInfo other) {
-            Log.d(TAG, "equals()");
             return this.numberKey.equals(other.numberKey);
         }
     }

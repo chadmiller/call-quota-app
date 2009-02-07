@@ -56,10 +56,7 @@ class Metering {
         Set neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
         if (neverMeteredNormalized != null) {
             if (neverMeteredNormalized.contains(Call.getNormalizedNumber(number))) {
-                Log.d(TAG, "found free friend!  " + number);
                 return new CountAndReason(0, "free friend");
-            } else {
-                Log.d(TAG, "friend " + number + " (" + Call.getNormalizedNumber(number) + ") is not free because it's not in " + neverMeteredNormalized.toString());
             }
         }
 

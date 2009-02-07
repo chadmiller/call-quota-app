@@ -90,22 +90,18 @@ public class Configuration {
 
                 Cursor c = db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
 
-                Log.d(TAG, "Getting free contact list into config.  Moving cursor to beginning.");
                 if (c.moveToFirst()) {
                     int numberColumn = c.getColumnIndex("number"); 
                     int numberKeyColumn = c.getColumnIndex("number_key"); 
                     do {
                         String n = c.getString(numberKeyColumn);
                         numbersNeverMetered.add(Call.getNormalizedNumber(n));
-                        Log.d(TAG, n + " -> " + Call.getNormalizedNumber(n) + "   " + numbersNeverMetered.toString());
                     } while (c.moveToNext());
                 } else {
-                    Log.d(TAG, "Can't seek to beginning.");
+                    Log.w(TAG, "getNumbersNeverMetered: Can't seek to beginning.");
                 }
 
                 db.close();
-            } else {
-                Log.d(TAG, "config says not want metered.  list is empty.");
             }
         }
         getNumbersNeverMetered_valid = true;
