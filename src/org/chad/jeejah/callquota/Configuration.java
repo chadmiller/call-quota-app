@@ -151,7 +151,7 @@ public class Configuration {
 
     public String getDateFormatString() {
         //this.dateFormatString = this.ctx.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
-        return "yyyy-MM-dd HH:mm";  //  FIXME
+        return "yyyy-MM-dd";  //  FIXME
     }
 
 
