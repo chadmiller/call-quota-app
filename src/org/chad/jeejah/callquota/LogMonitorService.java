@@ -15,14 +15,13 @@ import android.database.ContentObserver;
 import android.provider.CallLog.Calls;
 
 public class LogMonitorService extends Service {
-    private static final String LOG_TAG = "CallQuota.LogMonitorService";
+    private static final String TAG = "CallQuota.LogMonitorService";
     private Handler serviceHandler = null;
     private int counter;
     private NotificationManager notMan;
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(LOG_TAG,"onBind()   UNIMPLEMENTED!");
         return null;
     }
 
@@ -30,6 +29,7 @@ public class LogMonitorService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        Log.i(TAG, "creating service to listen for call-log changes.");
         serviceHandler = new Handler();
         ContentResolver contentResolver = getContentResolver();
         ContentObserver observer = new InterpretLogChanges(serviceHandler, this);

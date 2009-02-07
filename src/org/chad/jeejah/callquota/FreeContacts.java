@@ -76,38 +76,52 @@ public class FreeContacts extends ListActivity {
         }
 
         public int compareTo(ContactInfo other) {
+            Log.d(TAG, "compareTo");
             return this.numberKey.compareTo(other.numberKey);
         }
 
         public boolean equals(ContactInfo other) {
+            Log.d(TAG, "equals");
             return this.numberKey.equals(other.numberKey);
         }
     }
 
     private void setFreeContacts() {
 
-        for (ContactInfo c: contacts) {
-            ContentValues cv = new ContentValues();
-            cv.put("number", c.number);
-            cv.put("number_key", c.numberKey);
-            try {
-                this.db.insert("freecontacts", "?", cv);
-            } catch (android.database.sqlite.SQLiteConstraintException e) {
-                // throw away.
+        this.db.beginTransaction();
+        try {
+            this.db.delete("freecontacts", null, null);
+            for (ContactInfo c: contacts) {
+                ContentValues cv = new ContentValues();
+                cv.put("number", c.number);
+                cv.put("number_key", c.numberKey);
+                Log.d(TAG, "to db inserting key " + c.numberKey);
+                try {
+                    this.db.insert("freecontacts", "", cv);
+                } catch (android.database.sqlite.SQLiteConstraintException e) {
+                    Log.w(TAG, "Tried to insert value that's already there?  We cleared the table, though.  " + c.numberKey);
+                    // throw away.
+                }
             }
+            this.db.setTransactionSuccessful();
+        } finally {
+            this.db.endTransaction();
         }
     }
 
     private Set<ContactInfo> getFreeContacts() {
-        Cursor c = this.db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
+        Cursor c = this.db.query("freecontacts", new String[] {"number", "number_key"}, null, null, null, null, null);
 
         try {
 
             if (c.moveToFirst()) {
                 int numberColumn = c.getColumnIndex("number"); 
                 int numberKeyColumn = c.getColumnIndex("number_key"); 
+                assert(numberColumn < numberKeyColumn);
                 do {
-                    contacts.add(new ContactInfo(c.getString(numberColumn), c.getString(numberKeyColumn)));
+                    String k = c.getString(numberKeyColumn);
+                    Log.d(TAG, "getFreeContacts: from db read key " + k);
+                    contacts.add(new ContactInfo(c.getString(numberColumn), k));
                 } while (c.moveToNext());
             } else {
                 Log.d(TAG, "Can't reach first row.");
@@ -122,7 +136,7 @@ public class FreeContacts extends ListActivity {
     private MatrixCursor getFreeContactsCursor() {
         MatrixCursor mc = new MatrixCursor(storedProjection);
         for (ContactInfo c: getFreeContacts()) {
-            String row[] = {c.number, c.numberKey};
+            String row[] = {c.numberKey, c.number};  
             mc.addRow(row);
         }
 
@@ -170,8 +184,8 @@ public class FreeContacts extends ListActivity {
         final int accLabelTypePosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.TYPE);
         final int accNumberPosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.NUMBER);
         final int accNumberKeyPosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.NUMBER_KEY);
-        final int flcNumberPosition = freeListCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.NUMBER);
-        final int flcNumberKeyPosition = freeListCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.NUMBER_KEY);
+        final int flcNumberPosition = 1;  // See order in getFreeContactsCursor();
+        final int flcNumberKeyPosition = 0;
 
         prettyDisplayBacking.clear();
         CursorJoiner joiner = new CursorJoiner(freeListCursor, keyList, allContactsCursor, keyList);
@@ -179,17 +193,14 @@ public class FreeContacts extends ListActivity {
             switch (joinerResult) {
                 case LEFT:
                     prettyDisplayBacking.add(new ContactInfo("?", freeListCursor.getString(flcNumberPosition), freeListCursor.getString(flcNumberKeyPosition), "(orphaned)"));
-                    Log.d(TAG, freeListCursor.getString(flcNumberPosition) + " == n");
-                    Log.d(TAG, freeListCursor.getString(flcNumberKeyPosition) + " == nk");
+                    Log.d(TAG, "in freecontacts, but not in addressbook: " + freeListCursor.getString(flcNumberPosition) + "(" + freeListCursor.getString(flcNumberKeyPosition) + ")");
                     break;
                 case BOTH:
                     prettyDisplayBacking.add(new ContactInfo(allContactsCursor.getString(accNamePosition), allContactsCursor.getString(accNumberPosition), allContactsCursor.getString(accNumberKeyPosition), Contacts.Phones.getDisplayLabel(this, allContactsCursor.getInt(accLabelTypePosition), allContactsCursor.getString(accLabelPosition)).toString()));
                     break;
                 case RIGHT:
-                    Log.d(TAG, allContactsCursor.getString(accNumberPosition) + " == N");
-                    Log.d(TAG, allContactsCursor.getString(accNumberKeyPosition) + " == NK");
+                    Log.d(TAG, "in addressbook, but not in freecontacts: " + allContactsCursor.getString(accNumberPosition) + "(" + allContactsCursor.getString(accNumberKeyPosition) + ")");
                     break;
-                // discard all RIGHTs -- those are all contacts' numbers.
             }
         }
 
@@ -219,7 +230,8 @@ public class FreeContacts extends ListActivity {
             ContactInfo item = (ContactInfo) this.prettyDisplayBacking.toArray()[position];
             this.contacts.remove(item);
             this.prettyDisplayBacking.remove(item);
-            Log.d(TAG, "Remove " + item.number);
+            Log.d(TAG, "onListItemClick: Remove " + item.number);
+            setFreeContacts();
             getListView().invalidate();
         }
     }
@@ -236,7 +248,9 @@ public class FreeContacts extends ListActivity {
                     int numberKeyColumn = c.getColumnIndex(Contacts.PhonesColumns.NUMBER_KEY); 
 
                     do {
-                        contacts.add(new ContactInfo(c.getString(numberKeyColumn), c.getString(numberColumn)));
+                        String k = c.getString(numberKeyColumn);
+                        contacts.add(new ContactInfo(c.getString(numberColumn), k));
+                        Log.d(TAG, "onActivityResult, picked key " + k + " to add into contact set");
                     } while (c.moveToNext());
                 } else {
                     Log.d(TAG, "Can't reach first row.");

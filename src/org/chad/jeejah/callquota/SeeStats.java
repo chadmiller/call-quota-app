@@ -199,7 +199,7 @@ public class SeeStats extends Activity implements View.OnClickListener
         mi = menu.add(Menu.NONE, 3, Menu.NONE, "Audit");
         mi.setIcon(android.R.drawable.ic_menu_agenda);
 
-        mi = menu.add(Menu.NONE, 4, Menu.NONE, "Fill Data");
+        //mi = menu.add(Menu.NONE, 4, Menu.NONE, "Fill Data");
 
 		return true;
 	}
@@ -218,9 +218,9 @@ public class SeeStats extends Activity implements View.OnClickListener
             startActivity(new Intent(this, Audit.class));
 			return true;
 
-		case 4:
-            FillLog.fill(this);
-			return true;
+//		case 4:
+//            FillLog.fill(this);
+//			return true;
 
 		}
 		return super.onOptionsItemSelected(item);

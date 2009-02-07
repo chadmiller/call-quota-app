@@ -54,6 +54,7 @@ class Metering {
             return new CountAndReason(0, "unanswered");
 
         Set neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
+        Log.d(TAG, "never metered: " + neverMeteredNormalized + ", and number is " + Call.getNormalizedNumber(number));
         if (neverMeteredNormalized != null) {
             if (neverMeteredNormalized.contains(Call.getNormalizedNumber(number))) {
                 return new CountAndReason(0, "free friend");

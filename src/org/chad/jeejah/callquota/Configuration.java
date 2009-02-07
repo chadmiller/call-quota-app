@@ -81,8 +81,12 @@ public class Configuration {
     private boolean getNumbersNeverMetered_valid;
     HashSet<String> numbersNeverMetered = new HashSet<String>();
     Set getNumbersNeverMetered() {
+
         if (! getNumbersNeverMetered_valid) {
-            if (getWantNeverMeteredP()) {
+            numbersNeverMetered.clear();
+
+            if (! getWantNeverMeteredP()) {
+                Log.d(TAG, "getNumbersNeverMetered(): cache bad.  recreating.");
                 numbersNeverMetered.clear();
 
                 FreeContactsDb fcdb = new FreeContactsDb(this.ctx, "freecontacts", null, 1);
@@ -96,7 +100,7 @@ public class Configuration {
                             int numberColumn = c.getColumnIndex("number"); 
                             int numberKeyColumn = c.getColumnIndex("number_key"); 
                             do {
-                                String n = c.getString(numberKeyColumn);
+                                String n = c.getString(numberColumn);  // TODO  Find way to use key
                                 numbersNeverMetered.add(Call.getNormalizedNumber(n));
                             } while (c.moveToNext());
                         } else {
