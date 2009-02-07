@@ -1,5 +1,6 @@
 <PreferenceScreen 
 		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:title="@string/pref_title"
 		android:orderingFromXml="true">
 	<CheckBoxPreference
 			android:key="@string/id_show_notificationsP"
@@ -68,30 +69,24 @@
 					android:entries="@array/list_hours"
 					android:entryValues="@array/list_hours" />
 		</PreferenceCategory>
-
 	</PreferenceScreen>
 
-	<PreferenceCategory
-			android:title="Always free c title">
+	<CheckBoxPreference
+			android:key="@string/id_some_contacts_freeP"
+			android:title="@string/pref_title_some_contacts_freeP"
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="@string/pref_summon_some_contacts_freeP" 
+			android:summaryOff="@string/pref_summoff_some_contacts_freeP" />
 
-		<CheckBoxPreference
-				android:key="@string/id_some_contacts_freeP"
-				android:title="Are some contacts free?" 
-				android:defaultValue="true"
-				android:persistent="true"
-				android:summaryOn="Some are free always. My Faves, e.g." 
-				android:summaryOff="All contacts are billed equally." />
-
-		<PreferenceScreen
-				android:key="myfaves_section"
-				android:dependency="@string/id_some_contacts_freeP"
-				android:summary="summary"
-				android:title="@string/pref_group_faves_list_title">
-			<intent
-					android:action="android.intent.action.MAIN"
-					android:targetPackage="org.chad.jeejah.callquota"
-					android:targetClass="org.chad.jeejah.callquota.FreeContacts" />
-		</PreferenceScreen>
-	</PreferenceCategory>
+	<PreferenceScreen
+			android:key="@string/id_some_contacts_free_list"
+			android:dependency="@string/id_some_contacts_freeP"
+			android:title="@string/pref_group_faves_list_title">
+		<intent
+				android:action="android.intent.action.MAIN"
+				android:targetPackage="org.chad.jeejah.callquota"
+				android:targetClass="org.chad.jeejah.callquota.FreeContacts" />
+	</PreferenceScreen>
 
 </PreferenceScreen>

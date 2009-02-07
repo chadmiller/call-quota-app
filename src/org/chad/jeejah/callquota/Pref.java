@@ -26,12 +26,7 @@ public class Pref extends PreferenceActivity {
         // The preferences are already saved by this point.
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
 
-        Configuration configuration = app.conf();
-        configuration.invalidate();
-
-        UsageData usageData = app.usage();
-        usageData.invalidate();
-
+        app.invalidateAll();
         super.onStop();
     }
 }

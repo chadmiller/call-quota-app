@@ -30,7 +30,7 @@ public class Audit extends Activity {
         setTitle(R.string.title_audit);
 
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
-        this.usageData = app.usage();
+        this.usageData = app.usage(0);
         this.configuration = app.conf();
 
 

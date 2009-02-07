@@ -23,20 +23,21 @@ class Metering {
     }
 
 
-	/** Find the instant that ends a billing period. */
+    /** Find the instant that ends a billing period. */
     public long getEndOfNthBillBackAsMs(int n, int billEndDayOfMonth) {
         GregorianCalendar billEnd = new GregorianCalendar();
-		
-		/* If the last day is between the start of the month and now, then the
-		 * end is next month, so go there before rounding down. */
-		if (billEndDayOfMonth < billEnd.get(GregorianCalendar.DAY_OF_MONTH)) {
-			billEnd.add(GregorianCalendar.MONTH, 1);
-		}
+        
+        /* If the last day is between the start of the month and now, then the
+         * end is next month, so go there before rounding down. */
+        if (billEndDayOfMonth < billEnd.get(GregorianCalendar.DAY_OF_MONTH)) {
+            billEnd.add(GregorianCalendar.MONTH, 1);
+        }
+        billEnd.add(GregorianCalendar.MONTH, (n * -1));
         billEnd.set(GregorianCalendar.DAY_OF_MONTH, billEndDayOfMonth);
-		billEnd.add(GregorianCalendar.MONTH, (n * -1));
-        billEnd.set(GregorianCalendar.HOUR, 0);
-        billEnd.set(GregorianCalendar.MINUTE, 0);
-        billEnd.set(GregorianCalendar.SECOND, 0);
+        billEnd.set(GregorianCalendar.HOUR, 23);
+        billEnd.set(GregorianCalendar.MINUTE, 59);
+        billEnd.set(GregorianCalendar.SECOND, 59);
+        billEnd.set(GregorianCalendar.MILLISECOND, 999);
         return billEnd.getTimeInMillis();
     }
 

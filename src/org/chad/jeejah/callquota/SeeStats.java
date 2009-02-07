@@ -3,6 +3,8 @@ package org.chad.jeejah.callquota;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import android.util.Log;
 import android.content.Context;
@@ -11,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AlphaAnimation;
 import android.widget.ScrollView;
 import android.content.Intent;
 
@@ -19,7 +23,7 @@ import java.text.SimpleDateFormat;
 
 import org.chad.jeejah.callquota.Call;
 
-public class SeeStats extends Activity
+public class SeeStats extends Activity implements View.OnClickListener
 {
     private static final String TAG = "CallQuota.SeeStats";
 
@@ -29,6 +33,20 @@ public class SeeStats extends Activity
     private UsageData usageData;
     private NotificationManager notMan;
 
+    private View prev;
+    private View next;
+    private Animation mHideNextImageViewAnimation = new AlphaAnimation(1F, 0F);
+    private Animation mHidePrevImageViewAnimation = new AlphaAnimation(1F, 0F);
+    private Animation mShowNextImageViewAnimation = new AlphaAnimation(0F, 1F);
+    private Animation mShowPrevImageViewAnimation = new AlphaAnimation(0F, 1F);
+    private int nthMonthsBack;
+
+    Handler mHandler = new Handler() {
+        @Override
+            public void handleMessage(Message msg) {
+        }
+    };
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -37,6 +55,7 @@ public class SeeStats extends Activity
 
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
         this.configuration = app.conf();
+        nthMonthsBack = 0;
 
         Intent i = new Intent();
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
@@ -44,15 +63,72 @@ public class SeeStats extends Activity
 
         setContentView(R.layout.main);
 
-        this.usageData = app.usage();
+        prev = (View) findViewById(R.id.prev_image);
+        next = (View) findViewById(R.id.next_image);
+
+        this.usageData = app.usage(nthMonthsBack);
 
         viz = new Visualization(this, this.configuration, this.usageData, getWindowManager().getDefaultDisplay());
 
         ViewGroup root = (ViewGroup) findViewById(R.id.root);
         root.addView(viz, 1);
-
+        updatePrevNext();
     }
 
+    private void updatePrevNext() {
+        /*
+        boolean prevVisible = (prev.getVisibility() == View.VISIBLE);
+        boolean nextVisible = (next.getVisibility() == View.VISIBLE);
+
+        if (nthMonthsBack < 12) {
+            if (! prevVisible) {
+                Animation a = mShowPrevImageViewAnimation;
+                a.setDuration(500);
+                a.startNow();
+                prev.setAnimation(a);
+                prev.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (prevVisible) {
+                Animation a = mHidePrevImageViewAnimation;
+                a.setDuration(500);
+                a.startNow();
+                prev.setAnimation(a);
+                prev.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        if (nthMonthsBack > 0) {
+            if (! nextVisible) {
+                Animation a = mShowNextImageViewAnimation;
+                a.setDuration(500);
+                a.startNow();
+                next.setAnimation(a);
+                next.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (nextVisible) {
+                Animation a = mHideNextImageViewAnimation;
+                a.setDuration(500);
+                a.startNow();
+                next.setAnimation(a);
+                next.setVisibility(View.INVISIBLE);
+            }
+        }
+        */
+    }
+
+    private void showArrows() {
+        updatePrevNext();
+        scheduleDismissOnScreenControls();
+    }
+
+    private void scheduleDismissOnScreenControls() {
+        /*
+        mHandler.removeCallbacks(mDismissOnScreenControlsRunnable);
+        mHandler.postDelayed(mDismissOnScreenControlsRunnable, 1500);
+        */
+    }
 
     /** Called when the activity is first created. */
     @Override
@@ -123,6 +199,8 @@ public class SeeStats extends Activity
         mi = menu.add(Menu.NONE, 3, Menu.NONE, "Audit");
         mi.setIcon(android.R.drawable.ic_menu_agenda);
 
+        mi = menu.add(Menu.NONE, 4, Menu.NONE, "Fill Data");
+
 		return true;
 	}
 
@@ -139,10 +217,14 @@ public class SeeStats extends Activity
 		case 3:
             startActivity(new Intent(this, Audit.class));
 			return true;
+
+		case 4:
+            FillLog.fill(this);
+			return true;
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,6 +233,13 @@ public class SeeStats extends Activity
             usageData.invalidate();
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        }
+    }
+        
 }
 
 /* vim: set et ai sta : */

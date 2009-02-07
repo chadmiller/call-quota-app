@@ -63,7 +63,7 @@ public class Visualization extends View {
         Paint paint = mPaint;
         paint.setPathEffect(null);
 
-        paint.setStrokeWidth(0);
+        paint.setStrokeWidth(1.2f);
 
         long nowSec = java.lang.System.currentTimeMillis() / 1000;
 
@@ -72,7 +72,7 @@ public class Visualization extends View {
 
         long prediction = 0;
         double pixelsPerMinuteV;
-        if (! this.usageData.getIsSufficientDataToPredictP()) {
+        if (! this.usageData.getIsSufficientDataToPredictP() && (this.usageData.isCurrent())) {
             pixelsPerMinuteV = (double) graphHeight / configuration.getBillAllowedMeteredMinutes() * 1.1;
         } else {
             try {
@@ -164,49 +164,61 @@ public class Visualization extends View {
             }
         }
 
-        if (this.usageData.getIsSufficientDataToPredictP()) {
-            try {
-                Path p = new Path();
-
-                x = (float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH);
-                p.moveTo(x, y);
-
-                prediction = usageData.getPredictionAtBillMinutes();
-
-                x = graphWidth;
-                y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
-
-                p.lineTo(x, y);
-                if (prediction > configuration.getBillAllowedMeteredMinutes())
-                    paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
-                else
-                    paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
-
-                paint.setStrokeWidth(2);
-                paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, this.phase));  //  == 6
-                paint.setStyle(Paint.Style.STROKE);
-                canvas.drawPath(p, paint);
-                paint.setPathEffect(null);
-                paint.setStyle(Paint.Style.FILL);
-                paint.setTextAlign(Paint.Align.RIGHT);
-
-                canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-3), paint);
-
-                this.phase = (this.phase + 6.0F - 0.8F);  //   creep by some amount, backward.
-                while (this.phase > 6.0) this.phase -= 6.0F;  //   MOD of float.  Grr.
-
+        if (usageData.isCurrent()) {
+            if (this.usageData.getIsSufficientDataToPredictP()) {
                 try {
-                    Thread.sleep(170);
-                    invalidate();
-                } catch (InterruptedException e) {
-                    // throw away
+                    Path p = new Path();
+
+                    x = (float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH);
+                    p.moveTo(x, y);
+
+                    prediction = usageData.getPredictionAtBillMinutes();
+
+                    x = graphWidth;
+                    y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
+
+                    p.lineTo(x, y);
+                    if (prediction > configuration.getBillAllowedMeteredMinutes())
+                        paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
+                    else
+                        paint.setColor(res.getColor(R.drawable.vis_bill_graph_prediction_under));
+
+                    paint.setStrokeWidth(4);
+                    paint.setPathEffect(new DashPathEffect(new float[] { 2, 4 }, this.phase));  //  == 6
+                    paint.setStyle(Paint.Style.STROKE);
+                    canvas.drawPath(p, paint);
+                    paint.setPathEffect(null);
+                    paint.setStyle(Paint.Style.FILL);
+                    paint.setTextAlign(Paint.Align.RIGHT);
+
+                    canvas.drawText(String.format(res.getString(R.string.vis_prediction_description), prediction), x, Math.max(10, (int)y-5), paint);
+
+                    this.phase = (this.phase + 6.0F - 0.8F);  //   creep by some amount, backward.
+                    while (this.phase > 6.0) this.phase -= 6.0F;  //   MOD of float.  Grr.
+
+                    try {
+                        Thread.sleep(170);
+                        invalidate();
+                    } catch (InterruptedException e) {
+                        // throw away
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    Log.i(TAG, "Can't make prediction with no data available.");
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                Log.i(TAG, "Can't make prediction with no data available.");
+            } else {
+                Toast t = Toast.makeText(this.context, R.string.data_too_short_to_trend, Toast.LENGTH_LONG);
+                t.show();
             }
         } else {
-            Toast t = Toast.makeText(this.context, R.string.data_too_short_to_trend, Toast.LENGTH_LONG);
-            t.show();
+            prediction = usageData.getPredictionAtBillMinutes();
+
+            x = graphWidth;
+            y = (float) (graphHeight - (prediction * pixelsPerMinuteV));
+
+            paint.setPathEffect(null);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setTextAlign(Paint.Align.RIGHT);
+            canvas.drawText(String.format("%d", prediction), x, Math.max(10, (int)y-5), paint);
         }
     }
 

@@ -81,7 +81,7 @@ public class Configuration {
         if (! getWantNeverMeteredP()) {
             int i;
             for (i = 0; i < 10; i++) {
-                String candidate = this.sp.getString(this.ctx.getString(R.string.id_pref_free_contactNFmt, i), "");
+                String candidate = null;  // FIXME
                 if (candidate != null) {
                     s.add(Call.getNormalizedNumber(candidate));
                 }
@@ -151,7 +151,7 @@ public class Configuration {
 
     public String getDateFormatString() {
         //this.dateFormatString = this.ctx.query(System.CONTENT_URI, [System.DATE_FORMAT] ...
-        return "yyyy-MM-dd";  //  FIXME
+        return "yyyy-MM-dd HH:mm";  //  FIXME
     }
 
 

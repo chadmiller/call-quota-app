@@ -23,8 +23,9 @@
 	<string name="notification_overage_occurred_description">Allowed %3$dm, used %1$d; %4$d likely.</string>
 
 
+	<string name="pref_title">Settings</string>
 	<string name="pref_title_post_notifications">Post Notifications?</string>
-	<string name="pref_summon_post_notifications">Warnings will appear in notification bar.</string>
+	<string name="pref_summon_post_notifications">Emit warnings.</string>
 	<string name="pref_summoff_post_notifications">No warning flags will be raised.</string>
 	<string name="pref_title_adv_settings">Advanced settings</string>
 	<string name="pref_title_start_metering">Start-call metering</string>
@@ -46,18 +47,20 @@
 	<!-- same, but no #7 -->
 
 	<string name="pref_min_lim_title">Metered minutes allowed</string>
-	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes per bill.</string>
+	<string name="pref_min_lim_summary">Number of acceptable prime-time minutes.</string>
 
 	<string name="pref_first_bill_day_title">Day of month bill closes</string>
-	<string name="pref_first_bill_day_summary">Day of month that begins a new bill.</string>
+	<string name="pref_first_bill_day_summary">End of billing cycle.</string>
 
+	<string name="pref_group_faves_list_title">Choose free contacts</string>
 
-	<string name="pref_group_faves_list_title">Always-free contacts</string>
 	<string name="pref_group_time_based_billing_title">Daytime and Weekend Settings</string>
 	<string name="pref_range_start_hour">Daytime start</string>
 	<string name="pref_range_end_hour">Daytime end</string>
 
-	<string name="title_free_contacts">Always Free Contacts</string>
 	<string name="title_audit">Audit Metering</string>
 
+	<string name="pref_title_some_contacts_freeP">Some contacts are free?</string>
+	<string name="pref_summon_some_contacts_freeP">Some are free always. My Faves, e.g.</string> 
+	<string name="pref_summoff_some_contacts_freeP">All contacts are billed equally.</string>
 </resources>
