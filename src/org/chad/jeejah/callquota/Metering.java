@@ -1,7 +1,7 @@
 package org.chad.jeejah.callquota;
 
 import android.util.Log;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.GregorianCalendar;
 import android.provider.CallLog.Calls;
 
@@ -53,10 +53,13 @@ class Metering {
         if (type == Calls.MISSED_TYPE)
             return new CountAndReason(0, "unanswered");
 
-        HashSet neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
+        Set neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
         if (neverMeteredNormalized != null) {
             if (neverMeteredNormalized.contains(Call.getNormalizedNumber(number))) {
+                Log.d(TAG, "found free friend!  " + number);
                 return new CountAndReason(0, "free friend");
+            } else {
+                Log.d(TAG, "friend " + number + " (" + Call.getNormalizedNumber(number) + ") is not free because it's not in " + neverMeteredNormalized.toString());
             }
         }
 

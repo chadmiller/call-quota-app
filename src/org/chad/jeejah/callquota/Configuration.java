@@ -1,10 +1,13 @@
 package org.chad.jeejah.callquota;
 
 import java.util.HashSet;
+import java.util.Set;
 import android.util.Log;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import android.provider.Settings.System;
 
@@ -67,7 +70,7 @@ public class Configuration {
     private boolean wantNeverMeteredP;
     public boolean getWantNeverMeteredP() {
         if (! this.wantNeverMeteredP_valid) {
-            this.wantNeverMeteredP = this.sp.getBoolean(this.ctx.getString(R.string.id_show_notificationsP), true);
+            this.wantNeverMeteredP = this.sp.getBoolean(this.ctx.getString(R.string.id_some_contacts_freeP), true);
             Log.d(TAG, "refreshed wantNeverMeteredP");
             this.wantNeverMeteredP_valid = true;
         }
@@ -76,18 +79,37 @@ public class Configuration {
 
 
     private boolean getNumbersNeverMetered_valid;
-    HashSet getNumbersNeverMetered() {
-        HashSet<String> s = new HashSet<String>();
-        if (! getWantNeverMeteredP()) {
-            int i;
-            for (i = 0; i < 10; i++) {
-                String candidate = null;  // FIXME
-                if (candidate != null) {
-                    s.add(Call.getNormalizedNumber(candidate));
+    HashSet<String> numbersNeverMetered = new HashSet<String>();
+    Set getNumbersNeverMetered() {
+        if (! getNumbersNeverMetered_valid) {
+            if (getWantNeverMeteredP()) {
+                numbersNeverMetered.clear();
+
+                FreeContactsDb fcdb = new FreeContactsDb(this.ctx, "freecontacts", null, 1);
+                SQLiteDatabase db = fcdb.getWritableDatabase();
+
+                Cursor c = db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
+
+                Log.d(TAG, "Getting free contact list into config.  Moving cursor to beginning.");
+                if (c.moveToFirst()) {
+                    int numberColumn = c.getColumnIndex("number"); 
+                    int numberKeyColumn = c.getColumnIndex("number_key"); 
+                    do {
+                        String n = c.getString(numberKeyColumn);
+                        numbersNeverMetered.add(Call.getNormalizedNumber(n));
+                        Log.d(TAG, n + " -> " + Call.getNormalizedNumber(n) + "   " + numbersNeverMetered.toString());
+                    } while (c.moveToNext());
+                } else {
+                    Log.d(TAG, "Can't seek to beginning.");
                 }
+
+                db.close();
+            } else {
+                Log.d(TAG, "config says not want metered.  list is empty.");
             }
         }
-        return s;
+        getNumbersNeverMetered_valid = true;
+        return numbersNeverMetered;
     }
 
 

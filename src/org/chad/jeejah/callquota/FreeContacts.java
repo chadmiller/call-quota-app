@@ -103,6 +103,8 @@ public class FreeContacts extends ListActivity {
     private Set<ContactInfo> getFreeContacts() {
         Cursor c = this.db.query("freecontacts", new String[] {"number", "number_key"}, "", new String[] {}, "", "", "");
 
+        startManagingCursor(c);
+
         if (c.moveToFirst()) {
             int numberColumn = c.getColumnIndex("number"); 
             int numberKeyColumn = c.getColumnIndex("number_key"); 
@@ -162,6 +164,8 @@ public class FreeContacts extends ListActivity {
         ContentResolver cr = getContentResolver();
         Cursor allContactsCursor = cr.query(Contacts.Phones.CONTENT_URI, queriedProjection, null, null, Contacts.PhonesColumns.NUMBER_KEY);
 
+        startManagingCursor(allContactsCursor);
+
         final int accNamePosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PeopleColumns.DISPLAY_NAME);
         final int accLabelPosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.LABEL);
         final int accLabelTypePosition = allContactsCursor.getColumnIndexOrThrow(Contacts.PhonesColumns.TYPE);
@@ -180,7 +184,11 @@ public class FreeContacts extends ListActivity {
                     Log.d(TAG, freeListCursor.getString(flcNumberKeyPosition) + " == nk");
                     break;
                 case BOTH:
-                    prettyDisplayBacking.add(new ContactInfo(allContactsCursor.getString(accNamePosition), allContactsCursor.getString(accNumberPosition), allContactsCursor.getString(accNumberKeyPosition), getNumberLabel(allContactsCursor.getInt(accLabelTypePosition), allContactsCursor.getString(accLabelPosition))));
+                    prettyDisplayBacking.add(new ContactInfo(allContactsCursor.getString(accNamePosition), allContactsCursor.getString(accNumberPosition), allContactsCursor.getString(accNumberKeyPosition), Contacts.Phones.getDisplayLabel(this, allContactsCursor.getInt(accLabelTypePosition), allContactsCursor.getString(accLabelPosition)).toString()));
+                    break;
+                case RIGHT:
+                    Log.d(TAG, allContactsCursor.getString(accNumberPosition) + " == N");
+                    Log.d(TAG, allContactsCursor.getString(accNumberKeyPosition) + " == NK");
                     break;
                 // discard all RIGHTs -- those are all contacts' numbers.
             }
@@ -188,22 +196,6 @@ public class FreeContacts extends ListActivity {
 
         setListAdapter(new SimpleAdapter(this, getData(), R.layout.contacts_list_item, new String[] { "name", "number", "label" }, new int[] { R.id.name, R.id.number, R.id.label }));
 
-    }
-
-    private static String getNumberLabel(int type, String otherText) {
-        switch (type) {
-            case Contacts.PhonesColumns.TYPE_CUSTOM: return otherText;
-            case Contacts.PhonesColumns.TYPE_FAX_HOME: return "Fax Home";
-            case Contacts.PhonesColumns.TYPE_FAX_WORK: return "Fax Work";
-            case Contacts.PhonesColumns.TYPE_HOME: return "Home";
-            case Contacts.PhonesColumns.TYPE_MOBILE: return "Mobile";
-            case Contacts.PhonesColumns.TYPE_OTHER: return "Other";
-            case Contacts.PhonesColumns.TYPE_PAGER: return "Pager";
-            case Contacts.PhonesColumns.TYPE_WORK: return "Work";
-            default: 
-                Log.w(TAG, "unknown number label type " + type);
-                return "Other";
-        }
     }
 
     private List getData() {

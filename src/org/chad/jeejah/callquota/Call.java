@@ -34,7 +34,7 @@ public class Call {
 			}
 		}
 
-		return new String(cleanChars);
+		return new String(cleanChars).substring(0, i);
 	}
 
 }
