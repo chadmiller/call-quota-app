@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 
 import org.chad.jeejah.callquota.Call;
 
-public class SeeStats extends Activity implements View.OnClickListener
+public class SeeStats extends Activity //implements View.OnClickListener
 {
     private static final String TAG = "CallQuota.SeeStats";
 
@@ -234,11 +234,11 @@ public class SeeStats extends Activity implements View.OnClickListener
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-        }
-    }
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//        }
+//    }
         
 }
 
