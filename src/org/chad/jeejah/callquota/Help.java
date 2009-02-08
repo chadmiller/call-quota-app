@@ -15,3 +15,4 @@ public class Help extends Activity {
         setContentView(R.layout.help);
     }
 }
+/* vim: set et ai sta : */

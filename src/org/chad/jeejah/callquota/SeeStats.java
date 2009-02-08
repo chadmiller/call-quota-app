@@ -43,7 +43,7 @@ public class SeeStats extends Activity //implements View.OnClickListener
 
     Handler mHandler = new Handler() {
         @Override
-            public void handleMessage(Message msg) {
+        public void handleMessage(Message msg) {
         }
     };
 
@@ -57,9 +57,11 @@ public class SeeStats extends Activity //implements View.OnClickListener
         this.configuration = app.conf();
         nthMonthsBack = 0;
 
+        /*
         Intent i = new Intent();
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
-        startService(i);
+        bindService(i);
+        */
 
         setContentView(R.layout.main);
 
@@ -186,9 +188,9 @@ public class SeeStats extends Activity //implements View.OnClickListener
     }
 
     @Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		super.onPrepareOptionsMenu(menu);
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onPrepareOptionsMenu(menu);
         MenuItem mi;
         mi = menu.add(Menu.NONE, 1, Menu.NONE, "Configure");
         mi.setIcon(android.R.drawable.ic_menu_preferences);
@@ -201,30 +203,30 @@ public class SeeStats extends Activity //implements View.OnClickListener
 
         //mi = menu.add(Menu.NONE, 4, Menu.NONE, "Fill Data");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId()) {
-		case 1:
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+        case 1:
             startActivityForResult(new Intent(this, Pref.class), 1);
-			return true;
-		case 2:
+            return true;
+        case 2:
             startActivity(new Intent(this, Help.class));
-			return true;
-		case 3:
+            return true;
+        case 3:
             startActivity(new Intent(this, Audit.class));
-			return true;
+            return true;
 
-//		case 4:
+//        case 4:
 //            FillLog.fill(this);
-//			return true;
+//            return true;
 
-		}
-		return super.onOptionsItemSelected(item);
-	}
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

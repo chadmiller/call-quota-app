@@ -92,26 +92,26 @@ public class Audit extends Activity {
     }
 
     @Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		super.onPrepareOptionsMenu(menu);
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onPrepareOptionsMenu(menu);
         MenuItem mi;
         mi = menu.add(Menu.NONE, 1, Menu.NONE, "Query Carrier");
         mi.setIcon(android.R.drawable.ic_menu_help);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId()) {
-		case 1:
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+        case 1:
             startActivity(new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", "#646#", null)));
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
 /* vim: set et ai sta : */
