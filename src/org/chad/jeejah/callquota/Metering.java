@@ -4,6 +4,7 @@ import android.util.Log;
 import java.util.Set;
 import java.util.GregorianCalendar;
 import android.provider.CallLog.Calls;
+import android.telephony.PhoneNumberUtils;
 
 class Metering {
     public static final String TAG = "CallQuota.Metering";
@@ -54,9 +55,8 @@ class Metering {
             return new CountAndReason(0, "unanswered");
 
         Set neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
-        Log.d(TAG, "never metered: " + neverMeteredNormalized + ", and number is " + Call.getNormalizedNumber(number));
         if (neverMeteredNormalized != null) {
-            if (neverMeteredNormalized.contains(Call.getNormalizedNumber(number))) {
+            if (neverMeteredNormalized.contains(PhoneNumberUtils.toCallerIDMinMatch(number))) {
                 return new CountAndReason(0, "free friend");
             }
         }

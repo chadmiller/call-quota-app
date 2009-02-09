@@ -21,6 +21,7 @@ import android.database.CursorJoiner;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.telephony.PhoneNumberUtils;
 
 import android.provider.Contacts.People;
 
@@ -64,25 +65,24 @@ public class FreeContacts extends ListActivity {
         public String label;
 
         public ContactInfo(String number, String numberKey) {
-            this.number = number;
+            this.number = PhoneNumberUtils.formatNumber(number);
             this.numberKey = numberKey;
         }
 
         public ContactInfo(String name, String number, String numberKey, String label) {
             this.name = name;
-            this.number = number;
+            this.number = PhoneNumberUtils.formatNumber(number);
             this.numberKey = numberKey;
             this.label = label;
         }
 
         public int compareTo(ContactInfo other) {
-            Log.d(TAG, "compareTo");
-            return this.numberKey.compareTo(other.numberKey);
+            return this.number.compareTo(PhoneNumberUtils.formatNumber(other.number));
         }
 
         public boolean equals(ContactInfo other) {
             Log.d(TAG, "equals");
-            return this.numberKey.equals(other.numberKey);
+            return PhoneNumberUtils.compare(this.number, PhoneNumberUtils.formatNumber(other.number));
         }
     }
 
@@ -95,7 +95,6 @@ public class FreeContacts extends ListActivity {
                 ContentValues cv = new ContentValues();
                 cv.put("number", c.number);
                 cv.put("number_key", c.numberKey);
-                Log.d(TAG, "to db inserting key " + c.numberKey);
                 try {
                     this.db.insert("freecontacts", "", cv);
                 } catch (android.database.sqlite.SQLiteConstraintException e) {
@@ -120,11 +119,8 @@ public class FreeContacts extends ListActivity {
                 assert(numberColumn < numberKeyColumn);
                 do {
                     String k = c.getString(numberKeyColumn);
-                    Log.d(TAG, "getFreeContacts: from db read key " + k);
                     contacts.add(new ContactInfo(c.getString(numberColumn), k));
                 } while (c.moveToNext());
-            } else {
-                Log.d(TAG, "Can't reach first row.");
             }
 
             return contacts;
@@ -193,13 +189,11 @@ public class FreeContacts extends ListActivity {
             switch (joinerResult) {
                 case LEFT:
                     prettyDisplayBacking.add(new ContactInfo("?", freeListCursor.getString(flcNumberPosition), freeListCursor.getString(flcNumberKeyPosition), "(orphaned)"));
-                    Log.d(TAG, "in freecontacts, but not in addressbook: " + freeListCursor.getString(flcNumberPosition) + "(" + freeListCursor.getString(flcNumberKeyPosition) + ")");
                     break;
                 case BOTH:
                     prettyDisplayBacking.add(new ContactInfo(allContactsCursor.getString(accNamePosition), allContactsCursor.getString(accNumberPosition), allContactsCursor.getString(accNumberKeyPosition), Contacts.Phones.getDisplayLabel(this, allContactsCursor.getInt(accLabelTypePosition), allContactsCursor.getString(accLabelPosition)).toString()));
                     break;
                 case RIGHT:
-                    Log.d(TAG, "in addressbook, but not in freecontacts: " + allContactsCursor.getString(accNumberPosition) + "(" + allContactsCursor.getString(accNumberKeyPosition) + ")");
                     break;
             }
         }

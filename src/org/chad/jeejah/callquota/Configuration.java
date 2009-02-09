@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.telephony.PhoneNumberUtils;
 
 import android.provider.Settings.System;
 
@@ -85,7 +86,7 @@ public class Configuration {
         if (! getNumbersNeverMetered_valid) {
             numbersNeverMetered.clear();
 
-            if (! getWantNeverMeteredP()) {
+            if (getWantNeverMeteredP()) {
                 Log.d(TAG, "getNumbersNeverMetered(): cache bad.  recreating.");
                 numbersNeverMetered.clear();
 
@@ -101,7 +102,7 @@ public class Configuration {
                             int numberKeyColumn = c.getColumnIndex("number_key"); 
                             do {
                                 String n = c.getString(numberColumn);  // TODO  Find way to use key
-                                numbersNeverMetered.add(Call.getNormalizedNumber(n));
+                                numbersNeverMetered.add(PhoneNumberUtils.toCallerIDMinMatch(n));
                             } while (c.moveToNext());
                         } else {
                             Log.w(TAG, "getNumbersNeverMetered: Can't seek to beginning.");

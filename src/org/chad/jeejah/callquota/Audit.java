@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.telephony.PhoneNumberUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class Audit extends Activity {
             tr.addView(date);
 
             TextView number = new TextView(this);
-            number.setText(c.caller);
+            number.setText(PhoneNumberUtils.formatNumber(c.caller));
             number.setTextSize(10);
             tr.addView(number);
 
