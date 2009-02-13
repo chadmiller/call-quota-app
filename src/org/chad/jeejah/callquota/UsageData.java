@@ -70,7 +70,7 @@ public class UsageData {
         if (! beginningOfHistoryAsMs_valid) {
             this.beginningOfHistoryAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+2, this.configuration.getFirstBillDay());
             beginningOfHistoryAsMs_valid = true;
-            Log.d(TAG, "refreshed beginningOfHistoryAsMs");
+            Log.d(TAG, "refreshed beginningOfHistoryAsMs = " + this.beginningOfHistoryAsMs);
         }
         return this.beginningOfHistoryAsMs;
     }
@@ -81,7 +81,7 @@ public class UsageData {
         if (! beginningOfPeriodAsMs_valid) {
             this.beginningOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack+1, this.configuration.getFirstBillDay());
             beginningOfPeriodAsMs_valid = true;
-            Log.d(TAG, "refreshed beginningOfPeriodAsMs");
+            Log.d(TAG, "refreshed beginningOfPeriodAsMs = " + this.beginningOfPeriodAsMs);
         }
         return this.beginningOfPeriodAsMs;
     }
@@ -92,7 +92,7 @@ public class UsageData {
         if (! endOfPeriodAsMs_valid) {
             this.endOfPeriodAsMs = this.configuration.getMeteringRules().getEndOfNthBillBackAsMs(this.nthMonthBack, this.configuration.getFirstBillDay());
             endOfPeriodAsMs_valid = true;
-            Log.d(TAG, "refreshed endOfPeriodAsMs");
+            Log.d(TAG, "refreshed endOfPeriodAsMs = " + this.endOfPeriodAsMs);
         }
         return this.endOfPeriodAsMs;
     }

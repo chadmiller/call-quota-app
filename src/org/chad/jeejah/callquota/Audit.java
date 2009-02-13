@@ -7,6 +7,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TableRow;
 import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,10 +24,14 @@ import java.util.TreeMap;
 
 public class Audit extends Activity {
     private static final String TAG = "CallQuota.Audit";
-    UsageData usageData;
     Configuration configuration;
 
-    private TableLayout table;
+    UsageData usageDataNow;
+    UsageData usageDataPrev;
+    private TableLayout tableNow;
+    private TableLayout tablePrev;
+    private TextView descriptionNow;
+    private TextView descriptionPrev;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -35,17 +40,29 @@ public class Audit extends Activity {
         setTitle(R.string.title_audit);
 
         CallQuotaApplication app = (CallQuotaApplication) getApplication();
-        this.usageData = app.usage(0);
         this.configuration = app.conf();
+        this.usageDataNow = app.usage(0);
+        this.usageDataPrev = app.usage(1);
 
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+
+        this.descriptionPrev = new TextView(this);
+        container.addView(this.descriptionPrev);
+
+        this.tablePrev = new TableLayout(this);
+        this.tablePrev.setStretchAllColumns(true);
+        container.addView(this.tablePrev);
+
+        this.descriptionNow = new TextView(this);
+        container.addView(this.descriptionNow);
+
+        this.tableNow = new TableLayout(this);
+        this.tableNow.setStretchAllColumns(true);
+        container.addView(this.tableNow);
 
         ScrollView scrollPane = new ScrollView(this);
-
-        this.table = new TableLayout(this);
-        this.table.setStretchAllColumns(true);
-
-        scrollPane.addView(this.table);
-
+        scrollPane.addView(container);
         setContentView(scrollPane);
     }
 
@@ -53,9 +70,25 @@ public class Audit extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.getDateTimeFormatString());
 
-        this.table.removeAllViews();  // empty the table.
+        fillTable(this.usageDataPrev, this.descriptionPrev, this.tablePrev);
+        fillTable(this.usageDataNow, this.descriptionNow, this.tableNow);
+    }
+
+    private void fillTable(UsageData usageData, TextView description, TableLayout table) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(this.configuration.getDateFormatString());
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat(this.configuration.getDateTimeFormatString());
+
+        description.setTextSize(17);
+        description.setText("Bill " + 
+                dateFormat.format(new Date(usageData.getBeginningOfPeriodAsMs())) +
+                " to " +
+                dateFormat.format(new Date(usageData.getEndOfPeriodAsMs())) + ".");
+
+        description.setPadding(5, 14, 5, 7);
+
+        table.removeAllViews();  // empty the table.
 
         Resources res = getResources();
 
@@ -73,7 +106,7 @@ public class Audit extends Activity {
             sumAllCalls += callLengthMin;
 
             TextView date = new TextView(this);
-            date.setText(sdf.format(new Date(c.beginningFromEpochSec*1000)));
+            date.setText(datetimeFormat.format(new Date(c.beginningFromEpochSec*1000)));
             date.setTextSize(10);
             tr.addView(date);
 
@@ -109,7 +142,7 @@ public class Audit extends Activity {
                 sumText.setTextColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
             tr.addView(sumText);
 
-            this.table.addView(tr);
+            table.addView(tr);
         }
 
         sumPerReason.put("~ all", sumAllCalls);
@@ -133,7 +166,7 @@ public class Audit extends Activity {
             valueText.setText(Long.toString(v));
             tr.addView(valueText);
 
-            this.table.addView(tr);
+            table.addView(tr);
         }
     }
 
