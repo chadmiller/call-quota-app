@@ -166,9 +166,13 @@ public class FreeContacts extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-
         this.fcdb = new FreeContactsDb(this, "freecontacts", null, 1);
         this.db = fcdb.getWritableDatabase();
+        writeList();
+    }
+
+
+    private void writeList() {
 
         MatrixCursor freeListCursor = getFreeContactsCursor();
 
@@ -227,6 +231,7 @@ public class FreeContacts extends ListActivity {
             Log.d(TAG, "onListItemClick: Remove " + item.number);
             setFreeContacts();
             getListView().invalidate();
+            writeList();
         }
     }
 
