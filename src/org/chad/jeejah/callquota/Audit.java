@@ -10,12 +10,15 @@ import android.widget.ScrollView;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.telephony.PhoneNumberUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Audit extends Activity {
     private static final String TAG = "CallQuota.Audit";
@@ -53,13 +56,18 @@ public class Audit extends Activity {
 
         this.table.removeAllViews();  // empty the table.
 
+        Map <String, Long>sumPerReason = new TreeMap<String, Long>();
 
-        long sum = 0;
+        long sumMeteredCalls = 0;
+        long sumAllCalls = 0;
         for (Call c: usageData.getCallList()) {
             TableRow tr = new TableRow(this);
             tr.setPadding(0, 2, 0, 2);
 
-            sum += c.meteredMinutes;
+            long callLengthMin = new Double(Math.ceil((c.endFromEpochSec - c.beginningFromEpochSec) / 60.0)).longValue();
+
+            sumMeteredCalls += c.meteredMinutes;
+            sumAllCalls += callLengthMin;
 
             TextView date = new TextView(this);
             date.setText(sdf.format(new Date(c.beginningFromEpochSec*1000)));
@@ -77,6 +85,12 @@ public class Audit extends Activity {
                 meteredMinutes.setTextSize(10);
                 tr.addView(meteredMinutes);
             } else {
+
+                if (! sumPerReason.containsKey(c.reasonForRate)) {
+                    sumPerReason.put(c.reasonForRate, 0L);
+                }
+                sumPerReason.put(c.reasonForRate, sumPerReason.get(c.reasonForRate) + callLengthMin);
+
                 TextView reason = new TextView(this);
                 reason.setText("0  (" + c.reasonForRate + ")");
                 reason.setTextSize(10);
@@ -84,9 +98,33 @@ public class Audit extends Activity {
             }
 
             TextView sumText = new TextView(this);
-            sumText.setText(Long.toString(sum));
+            sumText.setText(Long.toString(sumMeteredCalls));
             sumText.setTextSize(10);
             tr.addView(sumText);
+
+            this.table.addView(tr);
+        }
+
+        sumPerReason.put("~ all", sumAllCalls);
+        if (sumAllCalls != sumMeteredCalls)
+            sumPerReason.put("~ metered", sumMeteredCalls);
+
+        for (String k: sumPerReason.keySet()) {
+            long v = sumPerReason.get(k);
+            if (v == 0)
+                continue;
+
+            TableRow tr = new TableRow(this);
+            tr.setPadding(4, 5, 4, 5);
+
+            TextView keyText = new TextView(this);
+            keyText.setGravity(Gravity.RIGHT);
+            keyText.setText(k + ": ");
+            tr.addView(keyText);
+
+            TextView valueText = new TextView(this);
+            valueText.setText(Long.toString(v));
+            tr.addView(valueText);
 
             this.table.addView(tr);
         }
