@@ -12,6 +12,7 @@ import android.widget.SimpleAdapter;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Contacts;
@@ -169,6 +170,9 @@ public class FreeContacts extends ListActivity {
         this.fcdb = new FreeContactsDb(this, "freecontacts", null, 1);
         this.db = fcdb.getWritableDatabase();
         writeList();
+
+        Toast t = Toast.makeText(this, R.string.tap_a_contact_to_remove_it, Toast.LENGTH_LONG);
+        t.show();
     }
 
 
