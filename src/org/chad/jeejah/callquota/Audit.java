@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.telephony.PhoneNumberUtils;
+import android.content.res.Resources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,6 +57,8 @@ public class Audit extends Activity {
 
         this.table.removeAllViews();  // empty the table.
 
+        Resources res = getResources();
+
         Map <String, Long>sumPerReason = new TreeMap<String, Long>();
 
         long sumMeteredCalls = 0;
@@ -81,6 +84,7 @@ public class Audit extends Activity {
 
             if (c.meteredMinutes != 0) {
                 TextView meteredMinutes = new TextView(this);
+                meteredMinutes.setTextColor(res.getColor(R.drawable.vis_bill_graph_call_more));
                 meteredMinutes.setText(String.format("%+d", c.meteredMinutes));
                 meteredMinutes.setTextSize(10);
                 tr.addView(meteredMinutes);
@@ -93,6 +97,7 @@ public class Audit extends Activity {
 
                 TextView reason = new TextView(this);
                 reason.setText("0  (" + c.reasonForRate + ")");
+                reason.setTextColor(res.getColor(R.drawable.vis_bill_graph_call_nochange));
                 reason.setTextSize(10);
                 tr.addView(reason);
             }
@@ -100,6 +105,8 @@ public class Audit extends Activity {
             TextView sumText = new TextView(this);
             sumText.setText(Long.toString(sumMeteredCalls));
             sumText.setTextSize(10);
+            if (sumMeteredCalls > configuration.getBillAllowedMeteredMinutes())
+                sumText.setTextColor(res.getColor(R.drawable.vis_bill_graph_prediction_over));
             tr.addView(sumText);
 
             this.table.addView(tr);
