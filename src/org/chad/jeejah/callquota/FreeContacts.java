@@ -202,8 +202,8 @@ public class FreeContacts extends ListActivity {
 
     }
 
-    private List getData() {
-        List<Map> data = new ArrayList<Map>();
+    private List<Map<String, String>> getData() {
+        List<Map<String, String>> data = new ArrayList<Map <String, String>>();
         for (ContactInfo ci: this.prettyDisplayBacking) {
             Map<String, String> temp = new HashMap<String, String>();
             temp.put("name", ci.name);
