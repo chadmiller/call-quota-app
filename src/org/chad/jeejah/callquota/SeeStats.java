@@ -57,11 +57,9 @@ public class SeeStats extends Activity //implements View.OnClickListener
         this.configuration = app.conf();
         nthMonthsBack = 0;
 
-        /*
         Intent i = new Intent();
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
-        bindService(i);
-        */
+        startService(i);
 
         setContentView(R.layout.main);
 
