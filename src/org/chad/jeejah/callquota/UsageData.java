@@ -147,14 +147,17 @@ public class UsageData {
         Log.i(TAG, "cached data invalidated");
     }
 
+    public List<Call> getCallList() {
+        return getCallList(true);
+    }
     
     private List<Call> callList;
-    public List<Call> getCallList() {
+    public List<Call> getCallList(boolean cacheCallList) {
         TimingLogger tl = new TimingLogger(TAG, "getCallList()");
         
         try {
 
-            if (valid) {
+            if (callList != null && valid) {
                 return callList;
             }
 
@@ -212,11 +215,17 @@ public class UsageData {
                 } else {
                     Log.d(TAG, "The provider is empty.  That's okay.");
                 }
-                this.callList = newCallList;
 
                 Log.d(TAG, "refreshed usedTotalMinutes, usedTotalMeteredMinutes, callList");
-                valid = true;
-                return this.callList;
+                if (cacheCallList) {
+                    Log.d(TAG, "not keeping call list");
+
+                    this.callList = newCallList;
+                    valid = true;
+                }
+
+                return newCallList;
+
             } finally {
                 cursor.close();
             }

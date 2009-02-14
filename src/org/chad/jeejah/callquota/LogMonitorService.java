@@ -53,7 +53,7 @@ public class LogMonitorService extends Service {
             if (! configuration.getWantNotificationsP())
                 return;
 
-            UsageData usageData = app.usage(0);  //FIXME NOW
+            UsageData usageData = app.usage(0, false);
 
             Intent seeStats = new Intent();
             seeStats.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.SeeStats");

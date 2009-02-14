@@ -9,13 +9,27 @@ public class CallQuotaApplication extends Application {
 
     private UsageData[] usageData;
     public UsageData usage(int nthMonthBack) {
-        if (usageData == null)
+        return usage(nthMonthBack, true);
+    }
+
+    public UsageData usage(int nthMonthBack, boolean cache_p) {
+        if (this.usageData == null) {
             this.usageData = new UsageData[12];
+        }
 
-        if (this.usageData[nthMonthBack] == null)
-            this.usageData[nthMonthBack] = new UsageData(this, conf(), TAG, nthMonthBack);
+        UsageData u;
 
-        return this.usageData[nthMonthBack];
+        if (this.usageData[nthMonthBack] == null) {
+            u = new UsageData(this, conf(), TAG, nthMonthBack);
+
+            if (cache_p) {
+                this.usageData[nthMonthBack] = u;
+            }
+        } else {
+            u = this.usageData[nthMonthBack];
+        }
+
+        return u;
     }
 
     private Configuration configuration;

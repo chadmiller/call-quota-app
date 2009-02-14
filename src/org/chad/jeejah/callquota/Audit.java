@@ -46,6 +46,7 @@ public class Audit extends Activity {
 
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
+        container.setVerticalFadingEdgeEnabled(true);
 
         this.descriptionPrev = new TextView(this);
         container.addView(this.descriptionPrev);
@@ -77,16 +78,10 @@ public class Audit extends Activity {
 
     private void fillTable(UsageData usageData, TextView description, TableLayout table) {
 
+        boolean wroteLine = false;
+
         SimpleDateFormat dateFormat = new SimpleDateFormat(this.configuration.getDateFormatString());
         SimpleDateFormat datetimeFormat = new SimpleDateFormat(this.configuration.getDateTimeFormatString());
-
-        description.setTextSize(17);
-        description.setText("Bill " + 
-                dateFormat.format(new Date(usageData.getBeginningOfPeriodAsMs())) +
-                " to " +
-                dateFormat.format(new Date(usageData.getEndOfPeriodAsMs())) + ".");
-
-        description.setPadding(5, 14, 5, 7);
 
         table.removeAllViews();  // empty the table.
 
@@ -97,6 +92,8 @@ public class Audit extends Activity {
         long sumMeteredCalls = 0;
         long sumAllCalls = 0;
         for (Call c: usageData.getCallList()) {
+            wroteLine = true;
+
             TableRow tr = new TableRow(this);
             tr.setPadding(0, 2, 0, 2);
 
@@ -167,6 +164,16 @@ public class Audit extends Activity {
             tr.addView(valueText);
 
             table.addView(tr);
+        }
+
+        if (wroteLine) {
+            description.setTextSize(17);
+            description.setText("Bill " + 
+                    dateFormat.format(new Date(usageData.getBeginningOfPeriodAsMs()+1000)) +
+                    " to " +
+                    dateFormat.format(new Date(usageData.getEndOfPeriodAsMs())) + ".");
+
+            description.setPadding(5, 14, 5, 7);
         }
     }
 

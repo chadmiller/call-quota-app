@@ -145,7 +145,7 @@ public class SeeStats extends Activity //implements View.OnClickListener
 
         SimpleDateFormat sdf = new SimpleDateFormat(this.configuration.getDateFormatString());
         TextView description = (TextView) findViewById(R.id.description);
-        String billStart = sdf.format(new Date(this.usageData.getBeginningOfPeriodAsMs()));
+        String billStart = sdf.format(new Date(this.usageData.getBeginningOfPeriodAsMs()+1000));
         String billEnd = sdf.format(new Date(this.usageData.getEndOfPeriodAsMs()));
         boolean wrotePrediction = false;
         try {
