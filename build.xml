@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="SeeStats" default="debug">
+<project name="TimeCop" default="debug">
     <!-- SDK Locations -->
     <property name="sdk-folder" value="/var/tmp/android-sdk" />
     <property name="android-tools" value="/var/tmp/android-sdk/tools" />
