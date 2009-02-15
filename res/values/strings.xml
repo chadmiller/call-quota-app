@@ -15,12 +15,12 @@
 
 
 	<string name="notification_overage_prediction_slug">Call time likely too much.</string>
-	<string name="notification_overage_prediction_title">Call rate unsustainable.</string>
-	<string name="notification_overage_prediction_description">Allowed %3$dmin, used %1$d so far.</string><!-- 1=all, 2=metered, 3=limit -->
+	<string name="notification_overage_prediction_title">Time used too fast.</string>
+	<string name="notification_overage_prediction_description">Allowed %3$dmin, at %1$d, %4$d likely.</string><!-- 1=all, 2=metered, 3=limit, 4=prediction -->
 
 	<string name="notification_overage_occurred_slug">Calls exceeded allotment.</string>
 	<string name="notification_overage_occurred_title">Too many prime-time calls!</string>
-	<string name="notification_overage_occurred_description">Allowed %3$dm, used %1$d; %4$d likely.</string>
+	<string name="notification_overage_occurred_description">Allowed %3$dmin, at %1$d, %4$d likely.</string><!-- 1=all, 2=metered, 3=limit, 4=prediction -->
 
 	<string name="tap_a_contact_to_remove_it">Tap a contact to remove it.</string>
 
