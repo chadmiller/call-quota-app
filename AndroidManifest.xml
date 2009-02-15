@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		package="org.chad.jeejah.callquota"
 		android:versionCode="23"
-		android:versionName="@string/app_version">
+		android:versionName="0.3.2">
 	<application 
 			android:name=".CallQuotaApplication"
 			android:icon="@drawable/icon"

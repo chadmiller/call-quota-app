@@ -78,7 +78,7 @@ public class FreeContacts extends ListActivity {
         }
 
         public int compareTo(ContactInfo other) {
-            return this.number.compareTo(PhoneNumberUtils.formatNumber(other.number));
+            return this.numberKey.compareTo(other.numberKey);
         }
 
         public boolean equals(ContactInfo other) {
@@ -196,12 +196,14 @@ public class FreeContacts extends ListActivity {
         for (CursorJoiner.Result joinerResult: joiner) {
             switch (joinerResult) {
                 case LEFT:
+                    Log.d(TAG, "LEFT   flc key = " + freeListCursor.getString(flcNumberKeyPosition));
                     prettyDisplayBacking.add(new ContactInfo("?", freeListCursor.getString(flcNumberPosition), freeListCursor.getString(flcNumberKeyPosition), "(orphaned)"));
                     break;
                 case BOTH:
                     prettyDisplayBacking.add(new ContactInfo(allContactsCursor.getString(accNamePosition), allContactsCursor.getString(accNumberPosition), allContactsCursor.getString(accNumberKeyPosition), Contacts.Phones.getDisplayLabel(this, allContactsCursor.getInt(accLabelTypePosition), allContactsCursor.getString(accLabelPosition)).toString()));
                     break;
                 case RIGHT:
+                    Log.d(TAG, "RIGHT  acc key = " + allContactsCursor.getString(accNumberKeyPosition));
                     break;
             }
         }
