@@ -61,6 +61,10 @@ public class SeeStats extends Activity //implements View.OnClickListener
         i.setClassName("org.chad.jeejah.callquota", "org.chad.jeejah.callquota.LogMonitorService");
         startService(i);
 
+        if (! this.configuration.isConfigured()) {
+            startActivityForResult(new Intent(this, Pref.class), 1);
+        }
+
         setContentView(R.layout.main);
 
         prev = (View) findViewById(R.id.prev_image);
@@ -199,8 +203,6 @@ public class SeeStats extends Activity //implements View.OnClickListener
         mi = menu.add(Menu.NONE, 3, Menu.NONE, "Audit");
         mi.setIcon(android.R.drawable.ic_menu_agenda);
 
-        //mi = menu.add(Menu.NONE, 4, Menu.NONE, "Fill Data");
-
         return true;
     }
 
@@ -217,11 +219,6 @@ public class SeeStats extends Activity //implements View.OnClickListener
         case 3:
             startActivity(new Intent(this, Audit.class));
             return true;
-
-//        case 4:
-//            FillLog.fill(this);
-//            return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

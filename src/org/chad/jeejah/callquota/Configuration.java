@@ -20,6 +20,10 @@ public class Configuration {
     private static final String TAG = "CallQuota.Configuration";
     private SharedPreferences sp;
 
+    public class NotConfigured extends Exception {
+        public NotConfigured() { };
+    };
+
     private Context ctx;
     public Configuration(Context ctx, String owner) {
         Log.d(TAG, "Created by " + owner);
@@ -166,12 +170,15 @@ public class Configuration {
         return this.warningPercentage;
     }
 
+    public boolean isConfigured() {
+        return this.sp.contains(this.ctx.getString(R.string.id_first_bill_day_of_month));
+    }
 
     private int firstBillDay;
     private boolean firstBillDay_valid;
     public int getFirstBillDay() {
         if (! this.firstBillDay_valid) {
-            this.firstBillDay = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "15"));
+            this.firstBillDay = Integer.decode(this.sp.getString(this.ctx.getString(R.string.id_first_bill_day_of_month), "1"));
             Log.d(TAG, "refreshed firstBillDay");
             this.firstBillDay_valid = true;
         }
