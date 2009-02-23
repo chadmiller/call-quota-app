@@ -97,13 +97,13 @@ public class Audit extends Activity {
             TableRow tr = new TableRow(this);
             tr.setPadding(0, 2, 0, 2);
 
-            long callLengthMin = new Double(Math.ceil((c.endFromEpochSec - c.beginningFromEpochSec) / 60.0)).longValue();
+            long callLengthMin = new Double(Math.ceil((c.endFromEpochMs - c.beginningFromEpochMs) / 60000.0)).longValue();
 
             sumMeteredCalls += c.meteredMinutes;
             sumAllCalls += callLengthMin;
 
             TextView date = new TextView(this);
-            date.setText(datetimeFormat.format(new Date(c.beginningFromEpochSec*1000)));
+            date.setText(datetimeFormat.format(new Date(c.beginningFromEpochMs)));
             date.setTextSize(10);
             tr.addView(date);
 

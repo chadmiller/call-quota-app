@@ -61,13 +61,13 @@ public class LogMonitorService extends Service {
 
             // FIXME refactor gBOTS gEOTS nS fBD
             int firstBillDay = configuration.getFirstBillDay();
-            long nowSec = java.lang.System.currentTimeMillis() / 1000;
+            long nowMs = java.lang.System.currentTimeMillis();
 
-            long graphBeginningOfTimeSec = configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay) / 1000;
-            long graphEndOfTimeSec = configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay) / 1000;
+            long graphBeginningOfTimeMs = configuration.getMeteringRules().getEndOfNthBillBackAsMs(1, firstBillDay);
+            long graphEndOfTimeMs = configuration.getMeteringRules().getEndOfNthBillBackAsMs(0, firstBillDay);
 
             // FIXME move 0.2 into config
-            if (((float)(nowSec - graphBeginningOfTimeSec) / (float)(graphEndOfTimeSec - graphBeginningOfTimeSec)) < 0.2)
+            if (((float)(nowMs - graphBeginningOfTimeMs) / (float)(graphEndOfTimeMs - graphBeginningOfTimeMs)) < 0.2)
                 return;
 
             long allowedMin = configuration.getBillAllowedMeteredMinutes();

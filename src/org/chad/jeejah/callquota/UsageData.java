@@ -109,13 +109,13 @@ public class UsageData {
             getCallList(); // has side effects
 
         try {
-            long nowSec = java.lang.System.currentTimeMillis() / 1000;
-            long periodLength = nowSec - (getBeginningOfHistoryAsMs() / 1000);
+            long nowMs = java.lang.System.currentTimeMillis();
+            long periodLength = nowMs - getBeginningOfHistoryAsMs();
 
             double growthInPeriod = (double) (getUsedTotalMeteredMinutesLastMonth() + getUsedTotalMeteredMinutes());
             double growthRate = growthInPeriod / periodLength;
 
-            long predictionPeriod = getEndOfPeriodAsMs()/1000 - nowSec;
+            long predictionPeriod = getEndOfPeriodAsMs() - nowMs;
             this.predictionAtBillMinutes = (long) (growthRate * predictionPeriod);
             this.predictionAtBillMinutes += getUsedTotalMeteredMinutes();
 
@@ -165,7 +165,7 @@ public class UsageData {
             Cursor cursor;
             
             ContentResolver cr = this.context.getContentResolver();
-            String whereClause = String.format("(%1$s + (%4$s * 1000)) > %2$d and (%1$s + (%4$s * 1000)) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
+            String whereClause = String.format("(%1$s + %4$s) > %2$d and (%1$s + %4$s) <= %3$d", Calls.DATE, getBeginningOfHistoryAsMs(), getEndOfPeriodAsMs(), Calls.DURATION);
             cursor = cr.query(Calls.CONTENT_URI, projection, whereClause, null, Calls.DATE);
             try {
 
@@ -184,29 +184,27 @@ public class UsageData {
                     String phoneNumber; 
 
                     do {
-                        long dateInMs, durationSeconds;
+                        long dateInMs, durationMs;
                         int type;
                         String number;
 
                         dateInMs = cursor.getLong(dateColumn);
-                        durationSeconds = cursor.getLong(durationColumn);
+                        durationMs = cursor.getLong(durationColumn) * 1000;
                         type = cursor.getInt(typeColumn);
                         number = cursor.getString(numberColumn);
 
-                        boolean isHistoricalP = dateInMs+(durationSeconds*1000) < getBeginningOfPeriodAsMs();
+                        boolean isHistoricalP = dateInMs+(durationMs) < getBeginningOfPeriodAsMs();
                         
-                        Call c = configuration.getMeteringRules().recordCallInfo(dateInMs, durationSeconds, number, type);
+                        Call c = configuration.getMeteringRules().recordCallInfo(dateInMs, durationMs, number, type);
 
                         if (isHistoricalP) {
                             this.historicalCallCount++;
                             this.usedTotalMeteredMinutesLastMonth += c.meteredMinutes;
 
                         } else {
-                            long dateInSec = (long) Math.ceil(dateInMs / 1000.0);
-
                             newCallList.add(c);
 
-                            this.usedTotalMinutes += (long) Math.ceil(durationSeconds / 60.0);
+                            this.usedTotalMinutes += (long) Math.ceil(durationMs / 60000.0);
                             this.usedTotalMeteredMinutes += c.meteredMinutes;
                         }
 

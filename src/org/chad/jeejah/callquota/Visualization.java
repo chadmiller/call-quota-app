@@ -53,8 +53,8 @@ public class Visualization extends View {
     protected void onDraw(Canvas canvas) {
         int firstBillDay = this.configuration.getFirstBillDay();
 
-        long graphBeginningOfTimeSec = this.usageData.getBeginningOfPeriodAsMs() / 1000;
-        long graphEndOfTimeSec = this.usageData.getEndOfPeriodAsMs()/ 1000;
+        long graphBeginningOfTimeMs = this.usageData.getBeginningOfPeriodAsMs();
+        long graphEndOfTimeMs = this.usageData.getEndOfPeriodAsMs();
 
         canvas.translate(padding, 0);
 
@@ -65,10 +65,10 @@ public class Visualization extends View {
 
         paint.setStrokeWidth(1.2f);
 
-        long nowSec = java.lang.System.currentTimeMillis() / 1000;
+        long nowMs = java.lang.System.currentTimeMillis();
 
         float x = 0, y = 0;
-        double pixelsPerSecondH = (double) graphWidth / (graphEndOfTimeSec - graphBeginningOfTimeSec);
+        double pixelsPerMsH = (double) graphWidth / (graphEndOfTimeMs - graphBeginningOfTimeMs);
 
         long prediction = 0;
         double pixelsPerMinuteV;
@@ -98,8 +98,8 @@ public class Visualization extends View {
         {
             paint.setColor(res.getColor(R.drawable.vis_now_date));
             Path p = new Path();
-            p.moveTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), graphHeight);
-            p.lineTo((float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH), 0);
+            p.moveTo((float)((nowMs - graphBeginningOfTimeMs) * pixelsPerMsH), graphHeight);
+            p.lineTo((float)((nowMs - graphBeginningOfTimeMs) * pixelsPerMsH), 0);
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawPath(p, paint);
             paint.setTextAlign(Paint.Align.RIGHT);
@@ -136,13 +136,13 @@ public class Visualization extends View {
         for (Call cd: this.usageData.getCallList()) {
             Path path = new Path();
 
-            x = (float)((cd.beginningFromEpochSec-graphBeginningOfTimeSec) * pixelsPerSecondH);
+            x = (float)((cd.beginningFromEpochMs-graphBeginningOfTimeMs) * pixelsPerMsH);
             path.moveTo(x, y);
 
             meteredMinutesCount += cd.meteredMinutes;
             double screenDistanceBilledTime = pixelsPerMinuteV * cd.meteredMinutes;
 
-            x = (float)((cd.endFromEpochSec      -graphBeginningOfTimeSec) * pixelsPerSecondH) + 1;
+            x = (float)((cd.endFromEpochMs   -graphBeginningOfTimeMs) * pixelsPerMsH) + 1;
 
             y -= screenDistanceBilledTime;
             path.lineTo(x, y);
@@ -169,7 +169,7 @@ public class Visualization extends View {
                 try {
                     Path p = new Path();
 
-                    x = (float)((nowSec - graphBeginningOfTimeSec) * pixelsPerSecondH);
+                    x = (float)((nowMs - graphBeginningOfTimeMs) * pixelsPerMsH);
                     p.moveTo(x, y);
 
                     prediction = usageData.getPredictionAtBillMinutes();
