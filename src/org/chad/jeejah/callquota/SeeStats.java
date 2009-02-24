@@ -62,7 +62,7 @@ public class SeeStats extends Activity //implements View.OnClickListener
         startService(i);
 
         if (! this.configuration.isConfigured()) {
-            startActivityForResult(new Intent(this, Pref.class), 1);
+            startActivityForResult(new Intent(this, Overview.class), 1);
         }
 
         setContentView(R.layout.main);

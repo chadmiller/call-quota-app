@@ -27,20 +27,12 @@
 			 	<data android:mimeType="vnd.org.chad.jeejah.callquota/vnd.chad.freecontact" />
 			 </intent-filter>
 		</activity>  
-		<activity android:name=".ShowCostly"  
-				  android:label="@string/app_name">  
-		</activity>  
-		<activity android:name=".Pref"  
-				  android:label="@string/app_name">  
-		</activity>  
-		<activity android:name=".Help"  
-				  android:label="@string/app_name">  
-		</activity>  
-		<activity android:name=".Audit"  
-				  android:label="@string/app_name">  
-		</activity>  
-		<service android:name=".LogMonitorService">
-		</service>
+		<activity android:name=".ShowCostly" android:label="@string/app_name"/>  
+		<activity android:name=".Pref" android:label="@string/app_name"/>  
+		<activity android:name=".Help" android:label="@string/app_name"/>  
+		<activity android:name=".Audit" android:label="@string/app_name"/>  
+		<activity android:name=".Overview" android:label="@string/app_name"/>  
+		<service android:name=".LogMonitorService"/>
 
 		<receiver android:name=".StartService" android:label="@string/app_name">
 			<intent-filter>
