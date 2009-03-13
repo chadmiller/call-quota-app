@@ -25,7 +25,13 @@
 			android:persistent="true"
 			android:entries="@array/list_days"
 			android:entryValues="@array/list_days" />
-
+	<CheckBoxPreference
+			android:key="@string/id_received_calls_meteredP"
+			android:title="@string/pref_title_received_calls_metered" 
+			android:defaultValue="true"
+			android:persistent="true"
+			android:summaryOn="@string/pref_summon_received_calls_metered" 
+			android:summaryOff="@string/pref_summoff_received_calls_metered" />
 
 	<PreferenceScreen
 			android:title="@string/pref_title_adv_settings">

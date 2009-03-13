@@ -15,7 +15,7 @@
 
 	<string name="app_overview_2">It represents your billing period, and time marches across it from left to right; left edge = bill begins, and right edge = bill due.  The current day is represented with a vertical line labled <b>now</b>.  Calls cause the usage line to grow upward, and if the line grows higher than the red <b>X minutes in plan</b> line, then you\'re spending extra money.  The dashed line from <b>now</b> to <b>bill</b> is Time Cop\'s prediction about what you will use, based on the last 60 days (at most) of history.  The amount of allowed time and the billing date have to be configured, before Time Cop works.  Set those now, and Time Cop will vigilantly keep you safe.</string>
 
-	<string name="data_too_short_to_trend">Sorry. There isn\'t enough information to show an accurate trend.</string>
+	<string name="data_too_short_to_trend">Sorry. There is not yet enough information to show an accurate trend.</string>
 
 
 	<string name="notification_overage_prediction_slug">Call time likely too much.</string>
@@ -68,4 +68,9 @@
 	<string name="pref_title_some_contacts_freeP">Some contacts are free?</string>
 	<string name="pref_summon_some_contacts_freeP">Some are free always. My Faves, e.g.</string> 
 	<string name="pref_summoff_some_contacts_freeP">All contacts are billed equally.</string>
+
+	<string name="pref_title_received_calls_metered">Incoming calls metered?</string>
+	<string name="pref_summon_received_calls_metered">Yes, inbound count. (Common in U.S.)</string> 
+	<string name="pref_summoff_received_calls_metered">No, inbound are free. (Common outside U.S.)</string>
+
 </resources>

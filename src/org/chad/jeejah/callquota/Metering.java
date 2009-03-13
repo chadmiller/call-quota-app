@@ -55,6 +55,10 @@ class Metering {
         if (type == Calls.MISSED_TYPE)
             return new CountAndReason(0, "unanswered");
 
+        if (type == Calls.INCOMING_TYPE)
+            if (! this.configuration.getIncomingCallsAreMetered())
+                return new CountAndReason(0, "incoming");
+
         Set neverMeteredNormalized = this.configuration.getNumbersNeverMetered();
         if (neverMeteredNormalized != null) {
             if (neverMeteredNormalized.contains(PhoneNumberUtils.toCallerIDMinMatch(number))) {

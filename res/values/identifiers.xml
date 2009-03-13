@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Time Cop</string>
-    <string name="app_version">0.4.0</string>
+    <string name="app_version">0.4.1</string>
     <string name="activity_name">Time Cop</string>
 	<string name="app_description">Predict and warn when calls are likely to incur extra charges on phone bill</string>
 
@@ -25,6 +25,6 @@
 	<string name="id_metering_starts_at_call_startP">id_metering_starts_at_call_startP</string>
 	<string name="id_daytime_beginning_hour">id_daytime_beginning_hour</string>
 	<string name="id_daytime_ending_hour">id_daytime_ending_hour</string>
-
+	<string name="id_received_calls_meteredP">id_received_calls_meteredP</string>
 
 </resources>

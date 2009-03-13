@@ -55,6 +55,7 @@ public class Configuration {
 
     public void invalidate() {
 
+        incomingCallsAreMetered_valid = false;
         billAllowedMeteredMinutes_valid = false;
         daytimeBeginningHour_valid = false;
         daytimeEndHour_valid = false;
@@ -82,6 +83,17 @@ public class Configuration {
         return this.wantNeverMeteredP;
     }
 
+
+    private boolean incomingCallsAreMetered_valid;
+    private boolean incomingCallsAreMetered;
+    public boolean getIncomingCallsAreMetered() {
+        if (! this.incomingCallsAreMetered_valid) {
+            this.incomingCallsAreMetered = this.sp.getBoolean(this.ctx.getString(R.string.id_received_calls_meteredP), true);
+            Log.d(TAG, "refreshed incomingCallsAreMetered");
+            this.incomingCallsAreMetered_valid = true;
+        }
+        return this.incomingCallsAreMetered;
+    }
 
     private boolean getNumbersNeverMetered_valid;
     HashSet<String> numbersNeverMetered = new HashSet<String>();
